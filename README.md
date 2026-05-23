@@ -4,8 +4,9 @@ Single-file landing page for SPECTRAL Web Studio.
 
 ## Files
 
+- `index.html` - main deployable page for GitHub Pages and static hosting.
 - `spectral-landing.html` - complete landing page with styles, SVG visuals, animations, RU/EN language switch and light/dark theme.
 
 ## Preview
 
-Open `spectral-landing.html` in a browser.
+Open `index.html` in a browser.
