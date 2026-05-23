@@ -1,12 +1,24 @@
 # SPECTRAL Landing
 
-Single-file landing page for SPECTRAL Web Studio.
+Next.js version of the SPECTRAL Web Studio landing page.
 
-## Files
+## Run Locally
 
-- `index.html` - main deployable page for GitHub Pages and static hosting.
-- `spectral-landing.html` - complete landing page with styles, SVG visuals, animations, RU/EN language switch and light/dark theme.
+```bash
+npm install
+npm run dev
+```
 
-## Preview
+Open `http://localhost:3000`.
 
-Open `index.html` in a browser.
+## Build
+
+```bash
+npm run build
+```
+
+The project uses static export, so production output is generated in `out/`.
+
+## Deploy
+
+GitHub Pages deployment is configured in `.github/workflows/pages.yml`.
