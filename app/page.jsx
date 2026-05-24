@@ -1,621 +1,933 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-const landingMarkup = String.raw`<div class="progress" id="progress"></div>
+const telegramUrl = "https://t.me/zenggen";
 
-<nav class="nav" id="nav">
-  <div class="wrap nav-inner">
-    <a href="#top" class="brand" aria-label="SPECTRAL">
-      <svg class="brand-mark" viewBox="0 0 44 44" fill="none" aria-hidden="true">
-        <rect x="12" y="10" width="12" height="24" rx="1.5" transform="rotate(13 18 22)" stroke="currentColor" stroke-width="1.7"/>
-        <path d="M27 15.5 40 12.5" stroke="var(--blue)" stroke-width="2.8" stroke-linecap="round"/>
-        <path d="M28 22 40 22" stroke="var(--teal)" stroke-width="2.8" stroke-linecap="round"/>
-        <path d="M27 28.5 40 31.5" stroke="var(--coral)" stroke-width="2.8" stroke-linecap="round"/>
-      </svg>
-      <span class="brand-text"><b>SPECTRAL</b><span>WEB STUDIO</span></span>
-    </a>
-    <div class="nav-links" id="navlinks">
-      <a class="link" href="#services" data-i18n="navServices">Услуги</a>
-      <a class="link" href="#approach" data-i18n="navApproach">Подход</a>
-      <a class="link" href="#process" data-i18n="navProcess">Процесс</a>
-      <a class="link" href="#work" data-i18n="navWork">Работы</a>
-      <a class="btn btn-primary" href="https://t.me/zenggen" target="_blank" rel="noopener">
-        <span data-i18n="navCta">Обсудить в Telegram</span>
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-    </div>
-    <div class="nav-actions">
-      <div class="lang-switch" aria-label="Language">
-        <button class="lang-btn active" type="button" data-lang="ru">RU</button>
-        <button class="lang-btn" type="button" data-lang="en">EN</button>
-      </div>
-      <button class="theme-toggle" type="button" id="themeToggle" aria-label="Переключить тему">
-        <svg class="sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4V2M12 22v-2M4.93 4.93 3.52 3.52M20.48 20.48l-1.41-1.41M4 12H2M22 12h-2M4.93 19.07l-1.41 1.41M20.48 3.52l-1.41 1.41" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/></svg>
-        <svg class="moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 14.7A7.7 7.7 0 0 1 9.3 3.8 8.7 8.7 0 1 0 20.2 14.7Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-      </button>
-      <button class="burger" id="burger" type="button" aria-label="Меню"><span></span><span></span><span></span></button>
-    </div>
-  </div>
-</nav>
-
-<header class="hero" id="top">
-  <div class="spectrum-field"></div>
-  <div class="wrap">
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <span class="eyebrow" data-load data-i18n="heroEyebrow">SPECTRAL WEB STUDIO</span>
-        <h1 class="hero-title">
-          <span><i data-i18n="heroTitle1">Сайты, где</i></span>
-          <span><i class="grad" data-i18n="heroTitle2">дизайн</i></span>
-          <span><i data-i18n="heroTitle3">работает как</i></span>
-          <span><i data-i18n="heroTitle4">система продаж.</i></span>
-        </h1>
-        <p class="lead" data-load data-i18n="heroLead">Мы проектируем лендинги, корпоративные сайты и продуктовые страницы так, чтобы визуал, смысл и код давали бизнесу заявки, доверие и скорость.</p>
-        <div class="hero-cta" data-load>
-          <a href="https://t.me/zenggen" target="_blank" rel="noopener" class="btn btn-primary">
-            <span data-i18n="heroCta">Написать @zenggen</span>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a href="#work" class="btn btn-secondary">
-            <span data-i18n="heroWork">Смотреть работы</span>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-        <div class="signal-row" data-load>
-          <div class="signal-item"><strong>2-4</strong><span data-i18n="statWeeks">недели до запуска</span></div>
-          <div class="signal-item"><strong>10+</strong><span data-i18n="statProjects">проектов в продакшене</span></div>
-          <div class="signal-item"><strong>100%</strong><span data-i18n="statProcess">прозрачный процесс</span></div>
-        </div>
-      </div>
-      <div class="prism-stage" id="prismStage" data-load>
-        <svg class="prism-shell" viewBox="0 0 660 470" fill="none" role="img" aria-label="SPECTRAL prism visual">
-          <defs>
-            <linearGradient id="beamBlue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4f94c9" stop-opacity=".18"/><stop offset=".22" stop-color="#4f94c9" stop-opacity=".75"/><stop offset="1" stop-color="#205a8d"/></linearGradient>
-            <linearGradient id="beamTeal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#42c5b6" stop-opacity=".18"/><stop offset=".22" stop-color="#42c5b6" stop-opacity=".76"/><stop offset="1" stop-color="#16877d"/></linearGradient>
-            <linearGradient id="beamCoral" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff8b78" stop-opacity=".18"/><stop offset=".22" stop-color="#ff8b78" stop-opacity=".78"/><stop offset="1" stop-color="#dd6558"/></linearGradient>
-            <linearGradient id="glass" x1="232" y1="96" x2="329" y2="326" gradientUnits="userSpaceOnUse"><stop stop-color="#fff" stop-opacity=".82"/><stop offset=".48" stop-color="#cfe7f3" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity=".46"/></linearGradient>
-            <filter id="beamGlow" x="0" y="0" width="660" height="470" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <g stroke="var(--line-strong)" stroke-width="1">
-            <path d="M55 126h520M28 236h590M80 346h485" opacity=".35"/>
-            <path d="M158 62v330M328 38v360M498 68v320" opacity=".24"/>
-          </g>
-          <g stroke="#b7c1cf" stroke-width="2.4" stroke-linecap="round" opacity=".9">
-            <path class="input-ray" d="M36 183 C96 190 158 199 220 208"/>
-            <path class="input-ray" d="M30 222 C94 224 156 228 221 233"/>
-            <path class="input-ray" d="M52 260 C111 254 165 250 222 246"/>
-          </g>
-          <g class="output-beams" filter="url(#beamGlow)">
-            <polygon points="326,184 352,179 640,92 640,150" fill="url(#beamBlue)"/>
-            <polygon points="330,223 356,223 640,201 640,262" fill="url(#beamTeal)"/>
-            <polygon points="324,258 350,263 640,326 640,388" fill="url(#beamCoral)"/>
-            <g class="beam-flow" stroke="#fff" stroke-width="2" stroke-dasharray="8 16" stroke-linecap="round">
-              <path d="M356 179 626 105"/>
-              <path d="M360 223 626 230"/>
-              <path d="M354 263 626 352"/>
-            </g>
-          </g>
-          <g class="prism-core">
-            <path d="M249 96 338 132 305 334 214 292Z" fill="url(#glass)" stroke="var(--ink)" stroke-width="2.8" stroke-linejoin="round"/>
-            <path d="M249 96 338 132 360 116 272 78Z" fill="var(--surface-2)" stroke="var(--ink)" stroke-width="2.8" stroke-linejoin="round"/>
-            <path d="M260 124 315 146 290 300 234 276Z" stroke="var(--ink)" stroke-opacity=".45" stroke-width="1.8"/>
-            <path class="facet-shine" d="M276 111 326 132 302 318" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".45"/>
-            <path d="M220 231 329 223" stroke="#fff" stroke-width="2" opacity=".38"/>
-          </g>
-          <g fill="#fff">
-            <circle class="spark" cx="356" cy="178" r="3"/>
-            <circle class="spark" cx="365" cy="223" r="3"/>
-            <circle class="spark" cx="354" cy="264" r="3"/>
-          </g>
-        </svg>
-        <div class="orbit-label">
-          <small data-i18n="orbitSmall">signal check</small>
-          <b data-i18n="orbitBig">No template noise</b>
-          <span data-i18n="orbitText">visual, copy, UX and code move in one direction</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="ticker" aria-hidden="true">
-    <div class="ticker-track">
-      <div class="ticker-item"><span data-i18n="tickerText">Стратегия</span><i></i><span data-i18n="tickerUx">UX/UI</span><i></i><span data-i18n="tickerFrontend">Frontend</span><i></i><span data-i18n="tickerMotion">Motion</span><i></i><span data-i18n="tickerSeo">SEO-ready</span><i></i><span data-i18n="tickerSpeed">Скорость</span><i></i></div>
-      <div class="ticker-item"><span data-i18n="tickerText">Стратегия</span><i></i><span data-i18n="tickerUx">UX/UI</span><i></i><span data-i18n="tickerFrontend">Frontend</span><i></i><span data-i18n="tickerMotion">Motion</span><i></i><span data-i18n="tickerSeo">SEO-ready</span><i></i><span data-i18n="tickerSpeed">Скорость</span><i></i></div>
-    </div>
-  </div>
-</header>
-
-<section class="section" id="services">
-  <div class="wrap">
-    <div class="section-head" data-reveal>
-      <div>
-        <span class="eyebrow" data-i18n="servicesEyebrow">Что делаем</span>
-        <h2><span data-i18n="servicesTitle1">Не просто страницы.</span><br><span data-i18n="servicesTitle2">Собираем цифровые точки продаж.</span></h2>
-      </div>
-      <p data-i18n="servicesLead">Каждый проект начинается с цели: заявки, доверие, продажи, запись, запуск продукта. Дальше мы подбираем визуальную систему, структуру и стек под эту цель.</p>
-    </div>
-    <div class="services-grid">
-      <article class="service-card tilt" data-reveal>
-        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4zM4 9h16M8 14h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3 data-i18n="service1Title">Лендинги</h3>
-        <p data-i18n="service1Text">Упаковываем оффер, ведем пользователя к заявке и делаем страницу быстрой на всех экранах.</p>
-        <span class="index">01</span>
-      </article>
-      <article class="service-card tilt" data-reveal>
-        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V7l8-4 8 4v12M8 19v-8h8v8M3 19h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3 data-i18n="service2Title">Корпоративные сайты</h3>
-        <p data-i18n="service2Text">Структура, доверие, услуги, команда и кейсы в одном цельном интерфейсе без ощущения шаблона.</p>
-        <span class="index">02</span>
-      </article>
-      <article class="service-card tilt" data-reveal>
-        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8h15l-2 9H7L5 4H3M9 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3 data-i18n="service3Title">E-commerce</h3>
-        <p data-i18n="service3Text">Каталоги, карточки, корзины и промо-разделы, где путь до покупки не ломается на мобильном.</p>
-        <span class="index">03</span>
-      </article>
-      <article class="service-card tilt" data-reveal>
-        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 17 9 12l4 4 7-9M20 7v6h-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3 data-i18n="service4Title">Рост и поддержка</h3>
-        <p data-i18n="service4Text">Аналитика, улучшения, новые блоки и техническая поддержка после запуска.</p>
-        <span class="index">04</span>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="section alt" id="approach">
-  <div class="wrap">
-    <div class="section-head" data-reveal>
-      <div>
-        <span class="eyebrow" data-i18n="approachEyebrow">Почему качественнее</span>
-        <h2><span data-i18n="approachTitle1">Делаем глубже, чем</span><br><span data-i18n="approachTitle2">"красивый первый экран".</span></h2>
-      </div>
-      <p data-i18n="approachLead">Сайт должен выглядеть уверенно, но еще важнее - объяснять ценность, выдерживать нагрузку, вести к действию и не разваливаться в деталях.</p>
-    </div>
-    <div class="why-layout">
-      <div class="why-panel" data-reveal>
-        <svg viewBox="0 0 520 560" preserveAspectRatio="none" aria-hidden="true">
-          <rect width="520" height="560" fill="#101827"/>
-          <path d="M-40 156 C126 82 229 98 344 48 C438 8 520 12 580 -24" stroke="#4f94c9" stroke-width="70" stroke-linecap="round" opacity=".55"/>
-          <path d="M-50 292 C128 218 257 250 376 204 C458 172 524 170 580 132" stroke="#42c5b6" stroke-width="72" stroke-linecap="round" opacity=".58"/>
-          <path d="M-40 422 C124 342 234 370 352 414 C430 443 511 450 580 420" stroke="#ff8b78" stroke-width="76" stroke-linecap="round" opacity=".62"/>
-          <g stroke="#fff" stroke-opacity=".16">
-            <path d="M64 0v560M192 0v560M320 0v560M448 0v560"/>
-            <path d="M0 92h520M0 224h520M0 356h520M0 488h520"/>
-          </g>
-        </svg>
-        <div class="why-panel-copy">
-          <small data-i18n="panelSmall">visual system</small>
-          <h3 data-i18n="panelTitle">more signal, less noise</h3>
-        </div>
-      </div>
-      <div class="why-list">
-        <article class="why-card" data-reveal>
-          <div class="why-num">01</div>
-          <div><h3 data-i18n="why1Title">Сначала логика бизнеса</h3><p data-i18n="why1Text">Разбираем аудиторию, оффер, возражения и путь к заявке. Поэтому блоки появляются не "для красоты", а по делу.</p></div>
-        </article>
-        <article class="why-card" data-reveal>
-          <div class="why-num">02</div>
-          <div><h3 data-i18n="why2Title">Визуал с характером</h3><p data-i18n="why2Text">Делаем композицию, ритм, микроанимации и графику под бренд, а не собираем очередной одинаковый лендинг.</p></div>
-        </article>
-        <article class="why-card" data-reveal>
-          <div class="why-num">03</div>
-          <div><h3 data-i18n="why3Title">Код готов к запуску</h3><p data-i18n="why3Text">Адаптив, скорость, аккуратная верстка, базовое SEO и чистая передача проекта без технического хвоста.</p></div>
-        </article>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section dark-band" id="process">
-  <div class="wrap">
-    <div class="section-head" data-reveal>
-      <div>
-        <span class="eyebrow" data-i18n="processEyebrow">Как работаем</span>
-        <h2><span data-i18n="processTitle1">Пять коротких этапов.</span><br><span data-i18n="processTitle2">Без тумана и вечных правок.</span></h2>
-      </div>
-      <p class="muted" data-i18n="processLead">Вы видите прогресс, понимаете следующий шаг и получаете сайт, который можно запускать, измерять и развивать.</p>
-    </div>
-    <div class="process-grid" id="processGrid">
-      <article class="process-step" data-reveal><div class="dot">01</div><h3 data-i18n="step1Title">Диагностика</h3><p data-i18n="step1Text">Цели, аудитория, конкуренты, сильные смыслы и структура будущего сайта.</p></article>
-      <article class="process-step" data-reveal><div class="dot">02</div><h3 data-i18n="step2Title">Прототип</h3><p data-i18n="step2Text">Собираем сценарий страницы и проверяем, что путь к заявке понятен.</p></article>
-      <article class="process-step" data-reveal><div class="dot">03</div><h3 data-i18n="step3Title">Дизайн</h3><p data-i18n="step3Text">Визуальная система, адаптивные состояния, графика и motion-направление.</p></article>
-      <article class="process-step" data-reveal><div class="dot">04</div><h3 data-i18n="step4Title">Разработка</h3><p data-i18n="step4Text">Чистая верстка, анимации, интеграции, скорость и тестирование.</p></article>
-      <article class="process-step" data-reveal><div class="dot">05</div><h3 data-i18n="step5Title">Запуск</h3><p data-i18n="step5Text">Публикация, проверка аналитики, передача доступов и поддержка после релиза.</p></article>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="work">
-  <div class="wrap">
-    <div class="section-head" data-reveal>
-      <div>
-        <span class="eyebrow" data-i18n="workEyebrow">Избранные работы</span>
-        <h2><span data-i18n="workTitle1">Проекты, которые</span><br><span data-i18n="workTitle2">уже работают на бизнес.</span></h2>
-      </div>
-      <p data-i18n="workLead">Ниже - не музей макетов, а живые сайты с разными задачами: продажи, заявки, продуктовый запуск и имидж бренда.</p>
-    </div>
-    <div class="work-grid">
-      <a class="case tilt" href="https://champion-fitness.kz/" target="_blank" rel="noopener" data-reveal style="--case-bg:linear-gradient(135deg,#101827,#1e2e54)">
-        <div class="case-visual">
-          <div class="mock-window">
-            <div class="mock-bar"><i></i><i></i><i></i></div>
-            <div class="mock-body">
-              <svg viewBox="0 0 520 300" preserveAspectRatio="none" aria-hidden="true">
-                <rect width="520" height="300" fill="#101827"/>
-                <rect x="34" y="34" width="190" height="22" rx="5" fill="#fff" opacity=".92"/>
-                <rect x="34" y="70" width="250" height="12" rx="4" fill="#ff806f"/>
-                <rect x="34" y="210" width="132" height="42" rx="21" fill="#ff806f"/>
-                <rect x="344" y="44" width="120" height="204" rx="12" fill="#26365f"/>
-                <circle cx="404" cy="130" r="42" fill="#ff806f" opacity=".82"/>
-                <path d="M336 252c64-52 108-47 170-18" stroke="#42c5b6" stroke-width="16" stroke-linecap="round" opacity=".55"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div class="case-body">
-          <div class="case-tags"><span data-i18n="case1Tag1">Веб-сайт</span><span data-i18n="case1Tag2">Сеть филиалов</span></div>
-          <h3>Champion Fitness <svg viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></h3>
-          <p data-i18n="case1Text">Сайт сети из 8 фитнес-клубов в Астане: онлайн-продажа абонементов, франшиза, магазин и понятный путь к заявке.</p>
-          <div class="case-foot"><span>champion-fitness.kz</span><div class="mini-spectrum"><i style="background:var(--blue)"></i><i style="background:var(--teal)"></i><i style="background:var(--coral)"></i></div></div>
-        </div>
-      </a>
-      <a class="case tilt" href="https://bapcare.com" target="_blank" rel="noopener" data-reveal style="--case-bg:linear-gradient(135deg,#eaf3f8,#5a95c3)">
-        <div class="case-visual">
-          <div class="mock-window">
-            <div class="mock-bar"><i></i><i></i><i></i></div>
-            <div class="mock-body">
-              <svg viewBox="0 0 520 300" preserveAspectRatio="none" aria-hidden="true">
-                <rect width="520" height="300" fill="#f5f9fc"/>
-                <rect x="34" y="34" width="225" height="24" rx="6" fill="#101827"/>
-                <rect x="34" y="72" width="170" height="12" rx="4" fill="#8a98aa"/>
-                <rect x="34" y="214" width="140" height="42" rx="21" fill="#205a8d"/>
-                <circle cx="390" cy="140" r="74" fill="#fff" stroke="#205a8d" stroke-width="6"/>
-                <text x="390" y="154" font-family="Space Grotesk, sans-serif" font-size="52" font-weight="700" fill="#205a8d" text-anchor="middle">82</text>
-                <path d="M300 252c60-52 118-52 184-2" stroke="#42c5b6" stroke-width="15" stroke-linecap="round" opacity=".45"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div class="case-body">
-          <div class="case-tags"><span data-i18n="case2Tag1">Продукт</span><span data-i18n="case2Tag2">AI</span></div>
-          <h3>Bapcare <svg viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></h3>
-          <p data-i18n="case2Text">Лендинг AI-сервиса анализа лица: сканер в браузере, Face Score и персональный план ухода.</p>
-          <div class="case-foot"><span>bapcare.com</span><div class="mini-spectrum"><i style="background:var(--blue)"></i><i style="background:var(--teal)"></i><i style="background:var(--coral)"></i></div></div>
-        </div>
-      </a>
-      <a class="case tilt" href="https://championschool.kz" target="_blank" rel="noopener" data-reveal style="--case-bg:linear-gradient(135deg,#0d3a36,#16877d)">
-        <div class="case-visual">
-          <div class="mock-window">
-            <div class="mock-bar"><i></i><i></i><i></i></div>
-            <div class="mock-body">
-              <svg viewBox="0 0 520 300" preserveAspectRatio="none" aria-hidden="true">
-                <rect width="520" height="300" fill="#0d3a36"/>
-                <rect x="34" y="40" width="260" height="26" rx="6" fill="#fff"/>
-                <rect x="34" y="82" width="190" height="12" rx="4" fill="#7de4d8"/>
-                <rect x="34" y="210" width="150" height="42" rx="21" fill="#42c5b6"/>
-                <rect x="342" y="42" width="122" height="210" rx="14" fill="#125a53"/>
-                <circle cx="403" cy="118" r="46" fill="#7de4d8" opacity=".44"/>
-                <path d="M328 238h154" stroke="#fff" stroke-opacity=".4" stroke-width="14" stroke-linecap="round"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div class="case-body">
-          <div class="case-tags"><span data-i18n="case3Tag1">Лендинг</span><span data-i18n="case3Tag2">Заявки</span></div>
-          <h3>Champion School <svg viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></h3>
-          <p data-i18n="case3Text">Школа фитнес-тренеров: офлайн в Астане и Алматы, онлайн по Казахстану, фокус на наборе учеников.</p>
-          <div class="case-foot"><span>championschool.kz</span><div class="mini-spectrum"><i style="background:var(--blue)"></i><i style="background:var(--teal)"></i><i style="background:var(--coral)"></i></div></div>
-        </div>
-      </a>
-      <a class="case tilt" href="https://koroid.agency" target="_blank" rel="noopener" data-reveal style="--case-bg:linear-gradient(135deg,#111,#282a31)">
-        <div class="case-visual">
-          <div class="mock-window">
-            <div class="mock-bar"><i></i><i></i><i></i></div>
-            <div class="mock-body">
-              <svg viewBox="0 0 520 300" preserveAspectRatio="none" aria-hidden="true">
-                <rect width="520" height="300" fill="#08090c"/>
-                <rect x="34" y="116" width="302" height="32" rx="6" fill="#fff"/>
-                <rect x="34" y="164" width="210" height="28" rx="6" fill="#656b78"/>
-                <circle cx="420" cy="150" r="64" fill="none" stroke="#ff806f" stroke-width="5"/>
-                <circle cx="420" cy="150" r="40" fill="none" stroke="#42c5b6" stroke-width="5"/>
-                <path d="M364 226c52-36 94-36 140 0" stroke="#4f94c9" stroke-width="13" stroke-linecap="round" opacity=".55"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div class="case-body">
-          <div class="case-tags"><span data-i18n="case4Tag1">Брендинг</span><span data-i18n="case4Tag2">Motion</span></div>
-          <h3>Koroid Agency <svg viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></h3>
-          <p data-i18n="case4Text">Имиджевый сайт диджитал-агентства: темная эстетика, насыщенная анимация и сильная подача бренда.</p>
-          <div class="case-foot"><span>koroid.agency</span><div class="mini-spectrum"><i style="background:var(--blue)"></i><i style="background:var(--teal)"></i><i style="background:var(--coral)"></i></div></div>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="contact" id="contact">
-  <div class="wrap contact-grid">
-    <div data-reveal>
-      <span class="eyebrow" data-i18n="contactEyebrow">Контакты</span>
-      <h2><span data-i18n="contactTitle1">Запустим сайт,</span><br><span class="grad" data-i18n="contactTitle2">который не стыдно показать.</span></h2>
-      <p data-i18n="contactLead">Напишите в Telegram, коротко расскажите задачу и получите понятный следующий шаг: формат, сроки, бюджет и что можно усилить уже на старте.</p>
-      <div class="contact-actions">
-        <a href="https://t.me/zenggen" target="_blank" rel="noopener" class="btn btn-primary">
-          <span data-i18n="contactCta">Написать @zenggen</span>
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a href="#services" class="btn btn-secondary"><span data-i18n="contactServices">Посмотреть услуги</span></a>
-      </div>
-    </div>
-    <aside class="contact-card" data-reveal>
-      <small data-i18n="contactCardSmall">Telegram</small>
-      <a href="https://t.me/zenggen" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.66 18.9 19c-.23 1-.83 1.25-1.68.78l-4.65-3.43-2.24 2.16c-.25.25-.46.46-.93.46l.33-4.73 8.62-7.79c.38-.33-.08-.52-.58-.19l-10.66 6.7-4.59-1.43c-1-.31-1.02-1 .21-1.48l17.95-6.92c.83-.31 1.56.2 1.29 1.46z"/></svg>
-        @zenggen
-      </a>
-      <p data-i18n="contactCardText">Пока оставили один контакт, чтобы не размазывать заявки по каналам.</p>
-    </aside>
-  </div>
-</section>
-
-<footer class="footer">
-  <div class="wrap">
-    <div class="footer-grid">
-      <a href="#top" class="brand" aria-label="SPECTRAL">
-        <svg class="brand-mark" viewBox="0 0 44 44" fill="none" aria-hidden="true">
-          <rect x="12" y="10" width="12" height="24" rx="1.5" transform="rotate(13 18 22)" stroke="#fff" stroke-width="1.7"/>
-          <path d="M27 15.5 40 12.5" stroke="#8fc7ef" stroke-width="2.8" stroke-linecap="round"/>
-          <path d="M28 22 40 22" stroke="#7de4d8" stroke-width="2.8" stroke-linecap="round"/>
-          <path d="M27 28.5 40 31.5" stroke="#ffad9d" stroke-width="2.8" stroke-linecap="round"/>
-        </svg>
-        <span class="brand-text"><b>SPECTRAL</b><span>WEB STUDIO</span></span>
-      </a>
-      <div class="footer-links">
-        <div class="footer-col">
-          <h4 data-i18n="footerNav">Навигация</h4>
-          <a href="#services" data-i18n="navServices">Услуги</a>
-          <a href="#approach" data-i18n="navApproach">Подход</a>
-          <a href="#work" data-i18n="navWork">Работы</a>
-        </div>
-        <div class="footer-col">
-          <h4 data-i18n="footerContact">Контакт</h4>
-          <a href="https://t.me/zenggen" target="_blank" rel="noopener">Telegram @zenggen</a>
-          <p data-i18n="footerCity">Астана, Казахстан</p>
-        </div>
-        <div class="footer-col">
-          <h4 data-i18n="footerServices">Форматы</h4>
-          <p data-i18n="service1Title">Лендинги</p>
-          <p data-i18n="service2Title">Корпоративные сайты</p>
-          <p data-i18n="service3Title">E-commerce</p>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© <span id="yr"></span> SPECTRAL Web Studio. <span data-i18n="rights">Все права защищены.</span></p>
-      <div class="mini-spectrum"><i style="background:#8fc7ef"></i><i style="background:#7de4d8"></i><i style="background:#ffad9d"></i></div>
-    </div>
-  </div>
-</footer>`;
-
-const copy={
-  ru:{
-    metaTitle:"SPECTRAL - веб-студия, которая превращает дизайн в заявки",
-    metaDescription:"SPECTRAL - веб-студия полного цикла. Проектируем, разрабатываем и запускаем сайты с сильной визуальной системой, быстрым кодом и фокусом на конверсии.",
-    navServices:"Услуги",navApproach:"Подход",navProcess:"Процесс",navWork:"Работы",navCta:"Обсудить в Telegram",
-    heroEyebrow:"SPECTRAL WEB STUDIO",heroTitle1:"Сайты, где",heroTitle2:"дизайн",heroTitle3:"работает как",heroTitle4:"система продаж.",
-    heroLead:"Мы проектируем лендинги, корпоративные сайты и продуктовые страницы так, чтобы визуал, смысл и код давали бизнесу заявки, доверие и скорость.",
-    heroCta:"Написать @zenggen",heroWork:"Смотреть работы",statWeeks:"недели до запуска",statProjects:"проектов в продакшене",statProcess:"прозрачный процесс",
-    orbitSmall:"signal check",orbitBig:"No template noise",orbitText:"visual, copy, UX and code move in one direction",
-    tickerText:"Стратегия",tickerUx:"UX/UI",tickerFrontend:"Frontend",tickerMotion:"Motion",tickerSeo:"SEO-ready",tickerSpeed:"Скорость",
-    servicesEyebrow:"Что делаем",servicesTitle1:"Не просто страницы.",servicesTitle2:"Собираем цифровые точки продаж.",
-    servicesLead:"Каждый проект начинается с цели: заявки, доверие, продажи, запись, запуск продукта. Дальше мы подбираем визуальную систему, структуру и стек под эту цель.",
-    service1Title:"Лендинги",service1Text:"Упаковываем оффер, ведем пользователя к заявке и делаем страницу быстрой на всех экранах.",
-    service2Title:"Корпоративные сайты",service2Text:"Структура, доверие, услуги, команда и кейсы в одном цельном интерфейсе без ощущения шаблона.",
-    service3Title:"E-commerce",service3Text:"Каталоги, карточки, корзины и промо-разделы, где путь до покупки не ломается на мобильном.",
-    service4Title:"Рост и поддержка",service4Text:"Аналитика, улучшения, новые блоки и техническая поддержка после запуска.",
-    approachEyebrow:"Почему качественнее",approachTitle1:"Делаем глубже, чем",approachTitle2:"\"красивый первый экран\".",
-    approachLead:"Сайт должен выглядеть уверенно, но еще важнее - объяснять ценность, выдерживать нагрузку, вести к действию и не разваливаться в деталях.",
-    panelSmall:"visual system",panelTitle:"more signal, less noise",
-    why1Title:"Сначала логика бизнеса",why1Text:"Разбираем аудиторию, оффер, возражения и путь к заявке. Поэтому блоки появляются не \"для красоты\", а по делу.",
-    why2Title:"Визуал с характером",why2Text:"Делаем композицию, ритм, микроанимации и графику под бренд, а не собираем очередной одинаковый лендинг.",
-    why3Title:"Код готов к запуску",why3Text:"Адаптив, скорость, аккуратная верстка, базовое SEO и чистая передача проекта без технического хвоста.",
-    processEyebrow:"Как работаем",processTitle1:"Пять коротких этапов.",processTitle2:"Без тумана и вечных правок.",
-    processLead:"Вы видите прогресс, понимаете следующий шаг и получаете сайт, который можно запускать, измерять и развивать.",
-    step1Title:"Диагностика",step1Text:"Цели, аудитория, конкуренты, сильные смыслы и структура будущего сайта.",
-    step2Title:"Прототип",step2Text:"Собираем сценарий страницы и проверяем, что путь к заявке понятен.",
-    step3Title:"Дизайн",step3Text:"Визуальная система, адаптивные состояния, графика и motion-направление.",
-    step4Title:"Разработка",step4Text:"Чистая верстка, анимации, интеграции, скорость и тестирование.",
-    step5Title:"Запуск",step5Text:"Публикация, проверка аналитики, передача доступов и поддержка после релиза.",
-    workEyebrow:"Избранные работы",workTitle1:"Проекты, которые",workTitle2:"уже работают на бизнес.",
-    workLead:"Ниже - не музей макетов, а живые сайты с разными задачами: продажи, заявки, продуктовый запуск и имидж бренда.",
-    case1Tag1:"Веб-сайт",case1Tag2:"Сеть филиалов",case1Text:"Сайт сети из 8 фитнес-клубов в Астане: онлайн-продажа абонементов, франшиза, магазин и понятный путь к заявке.",
-    case2Tag1:"Продукт",case2Tag2:"AI",case2Text:"Лендинг AI-сервиса анализа лица: сканер в браузере, Face Score и персональный план ухода.",
-    case3Tag1:"Лендинг",case3Tag2:"Заявки",case3Text:"Школа фитнес-тренеров: офлайн в Астане и Алматы, онлайн по Казахстану, фокус на наборе учеников.",
-    case4Tag1:"Брендинг",case4Tag2:"Motion",case4Text:"Имиджевый сайт диджитал-агентства: темная эстетика, насыщенная анимация и сильная подача бренда.",
-    contactEyebrow:"Контакты",contactTitle1:"Запустим сайт,",contactTitle2:"который не стыдно показать.",
-    contactLead:"Напишите в Telegram, коротко расскажите задачу и получите понятный следующий шаг: формат, сроки, бюджет и что можно усилить уже на старте.",
-    contactCta:"Написать @zenggen",contactServices:"Посмотреть услуги",contactCardSmall:"Telegram",contactCardText:"Пока оставили один контакт, чтобы не размазывать заявки по каналам.",
-    footerNav:"Навигация",footerContact:"Контакт",footerServices:"Форматы",footerCity:"Астана, Казахстан",rights:"Все права защищены.",
-    themeLabel:"Переключить тему",menuLabel:"Меню"
+const copy = {
+  ru: {
+    lang: "RU",
+    theme: "Тема",
+    loaderKicker: "SPECTRAL LAUNCH SEQUENCE",
+    loaderTitle: "Собираем сигнал",
+    loaderText: "Свет, смысл и заявка сходятся в одну точку.",
+    hello: "Привет!",
+    question: "Как мне вас называть?",
+    namePlaceholder: "Ваше имя",
+    start: "Запустить сценарий",
+    scroll: "Скролл или стрелки переключают сцены",
+    next: "Дальше",
+    back: "Назад",
+    skip: "Пропустить к форме",
+    nav: ["Вход", "Команда", "Процесс", "Кейсы", "Форма"],
+    bridgeAbout: "Отлично! Давайте расскажу о нас поподробнее",
+    bridgeWork: "А теперь немного о том как мы работаем",
+    bridgeCases: "Убедитесь на уже готовых примерах:",
+    bridgeFinal: "Последний переход. Если сигнал совпал - оставьте короткий контакт.",
+    aboutKicker: "SPECTRAL / команда полного цикла",
+    aboutTitleA: "Делаем сайты,",
+    aboutTitleB: "которые продают.",
+    aboutLead:
+      "Мы соединяем стратегию, визуальную систему, UX, motion и код так, чтобы сайт не просто выглядел дорого, а приводил заявки и помогал бизнесу говорить убедительно.",
+    points: [
+      ["Быстрый запуск", "Первую рабочую версию можно довести до публикации за 1-2 недели."],
+      ["Фокус на конверсии", "Структура, тексты и анимации ведут человека к понятному действию."],
+      ["Прозрачный процесс", "Вы видите этапы, решения и следующий шаг без тумана и бесконечных правок."],
+      ["Дизайн с характером", "Не собираем шаблон. Подбираем визуальный язык под задачу бизнеса."],
+    ],
+    workKicker: "как мы работаем",
+    workTitle: "От идеи до запуска без хаоса.",
+    workLead:
+      "Текст здесь можно будет заменить на твой. Пока оставил структуру: сначала разбираем цель, потом собираем сценарий, дизайн, разработку и запуск.",
+    workSteps: [
+      ["01", "Разбор", "Бла-бла-бла про аудиторию, оффер, конкурентов и боли бизнеса."],
+      ["02", "Сценарий", "Бла-бла-бла про структуру страницы и путь пользователя к заявке."],
+      ["03", "Дизайн", "Бла-бла-бла про графику, адаптив, цвета, анимации и дорогую подачу."],
+      ["04", "Запуск", "Бла-бла-бла про верстку, скорость, тестирование, аналитику и публикацию."],
+    ],
+    casesKicker: "готовые проекты",
+    casesTitle: "Выберите кейс на витрине.",
+    casesLead:
+      "Карточки стоят как игровые артефакты: выбранный сайт подсвечивается, а справа появляется короткая история проекта.",
+    caseHint: "Нажмите →, чтобы выбрать первый кейс",
+    caseEmpty:
+      "Сначала выберите кейс. Карточка подсветится белыми гранями, станет крупнее, а справа появится краткая история сайта.",
+    selectedLabel: "выбранный кейс",
+    openCase: "Открыть сайт",
+    cases: [
+      {
+        name: "Champion Fitness",
+        url: "https://champion-fitness.kz/",
+        domain: "champion-fitness.kz",
+        tags: ["сеть филиалов", "fitness", "продажи"],
+        palette: "linear-gradient(135deg,#2c2105,#d6a816 54%,#ffdf67)",
+        summary:
+          "Сайт для сети из 8 фитнес-клубов в Астане. Сделан как коммерческий хаб: абонементы, франшиза, магазин и понятный путь к заявке. Стиль - спортивный, уверенный, темный premium.",
+      },
+      {
+        name: "Bapcare",
+        url: "https://bapcare.com",
+        domain: "bapcare.com",
+        tags: ["AI", "beauty", "product"],
+        palette: "linear-gradient(135deg,#073a32,#27b88f 56%,#b7f3dc)",
+        summary:
+          "Лендинг AI-сервиса анализа лица. Фокус на продуктовой подаче: сканер, Face Score и персональный план ухода. Стиль - чистый, технологичный, легкий.",
+      },
+      {
+        name: "Champion School",
+        url: "https://championschool.kz",
+        domain: "championschool.kz",
+        tags: ["education", "leads", "fitness"],
+        palette: "linear-gradient(135deg,#030405,#10141b 56%,#2b3038)",
+        summary:
+          "Лендинг школы фитнес-тренеров для офлайн и онлайн-набора учеников. Сделан вокруг доверия, программы и заявки. Стиль - энергичный, образовательный, конверсионный.",
+      },
+      {
+        name: "Koroid Agency",
+        url: "https://koroid.agency",
+        domain: "koroid.agency",
+        tags: ["agency", "motion", "branding"],
+        palette: "linear-gradient(135deg,#050505,#202228 56%,#747982)",
+        summary:
+          "Имиджевый сайт digital-агентства. Задача - сильная подача бренда, темная эстетика и насыщенное движение. Стиль - дерзкий, cinematic, motion-first.",
+      },
+    ],
+    ctaQuestion: (name) => `Смогли ли мы вас заинтересовать, ${name}?`,
+    ctaAnswer: "Если да, заполните форму, чтобы связаться с нами",
+    formKicker: "финальный контакт",
+    formTitle: "Расскажите минимум, а остальное уточним в диалоге.",
+    formLead:
+      "Пока форма никуда не отправляет данные. Она показывает, какую информацию нужно будет собирать: контакт и идею будущего сайта.",
+    contactLabel: "Контакт",
+    contactPlaceholder: "Telegram, телефон или WhatsApp",
+    ideaLabel: "Идея для сайта",
+    ideaPlaceholder: "Например: сайт для фитнес-клуба, лидогенерация, запуск продукта...",
+    submit: "Собрать бриф",
+    copyBrief: "Скопировать бриф",
+    copied: "Скопировано",
+    openTelegram: "Открыть Telegram",
+    resultTitle: "Бриф собран.",
+    resultText: "Теперь его можно скопировать и отправить в Telegram @zenggen.",
   },
-  en:{
-    metaTitle:"SPECTRAL - web studio turning design into qualified leads",
-    metaDescription:"SPECTRAL is a full-cycle web studio. We design, build and launch websites with strong visual systems, fast code and conversion-focused structure.",
-    navServices:"Services",navApproach:"Approach",navProcess:"Process",navWork:"Work",navCta:"Discuss on Telegram",
-    heroEyebrow:"SPECTRAL WEB STUDIO",heroTitle1:"Websites where",heroTitle2:"design",heroTitle3:"works like",heroTitle4:"a sales system.",
-    heroLead:"We design landing pages, corporate websites and product pages where visuals, messaging and code work together to bring leads, trust and speed.",
-    heroCta:"Message @zenggen",heroWork:"View work",statWeeks:"weeks to launch",statProjects:"projects in production",statProcess:"transparent process",
-    orbitSmall:"signal check",orbitBig:"No template noise",orbitText:"visual, copy, UX and code move in one direction",
-    tickerText:"Strategy",tickerUx:"UX/UI",tickerFrontend:"Frontend",tickerMotion:"Motion",tickerSeo:"SEO-ready",tickerSpeed:"Speed",
-    servicesEyebrow:"What we build",servicesTitle1:"Not just pages.",servicesTitle2:"Digital sales points with depth.",
-    servicesLead:"Every project starts with a goal: leads, trust, sales, bookings or a product launch. Then we shape the visual system, structure and stack around that goal.",
-    service1Title:"Landing pages",service1Text:"We package the offer, guide people to action and keep the page fast on every screen.",
-    service2Title:"Corporate websites",service2Text:"Structure, trust, services, team and cases inside one cohesive interface without a template feel.",
-    service3Title:"E-commerce",service3Text:"Catalogs, product pages, carts and promo sections where the path to purchase stays clean on mobile.",
-    service4Title:"Growth and support",service4Text:"Analytics, improvements, new sections and technical support after launch.",
-    approachEyebrow:"Why it feels better",approachTitle1:"We go deeper than",approachTitle2:"a pretty first screen.",
-    approachLead:"A website should look confident, but it also has to explain value, handle real use, guide action and hold together in the details.",
-    panelSmall:"visual system",panelTitle:"more signal, less noise",
-    why1Title:"Business logic first",why1Text:"We unpack the audience, offer, objections and path to lead. Blocks appear for a reason, not just decoration.",
-    why2Title:"Visuals with character",why2Text:"Composition, rhythm, micro-animation and graphics are shaped for the brand instead of another identical landing page.",
-    why3Title:"Launch-ready code",why3Text:"Responsive layout, speed, tidy markup, basic SEO and clean handoff without a technical tail.",
-    processEyebrow:"How we work",processTitle1:"Five compact stages.",processTitle2:"No fog. No endless edits.",
-    processLead:"You see progress, understand the next step and receive a website that can be launched, measured and improved.",
-    step1Title:"Diagnosis",step1Text:"Goals, audience, competitors, strong messages and the future site structure.",
-    step2Title:"Prototype",step2Text:"We assemble the page scenario and check that the route to action is clear.",
-    step3Title:"Design",step3Text:"Visual system, responsive states, graphics and the motion direction.",
-    step4Title:"Development",step4Text:"Clean markup, animation, integrations, performance and testing.",
-    step5Title:"Launch",step5Text:"Publishing, analytics checks, access handoff and support after release.",
-    workEyebrow:"Selected work",workTitle1:"Projects already",workTitle2:"working for businesses.",
-    workLead:"These are live websites with different goals: sales, leads, product launch and brand image.",
-    case1Tag1:"Website",case1Tag2:"Branch network",case1Text:"Website for 8 fitness clubs in Astana: online memberships, franchise, shop and a clear route to inquiry.",
-    case2Tag1:"Product",case2Tag2:"AI",case2Text:"Landing page for an AI face analysis service: browser scanner, Face Score and a personal care plan.",
-    case3Tag1:"Landing",case3Tag2:"Leads",case3Text:"Fitness trainer school: offline in Astana and Almaty, online across Kazakhstan, focused on student acquisition.",
-    case4Tag1:"Branding",case4Tag2:"Motion",case4Text:"Image website for a digital agency: dark aesthetic, rich animation and strong brand presentation.",
-    contactEyebrow:"Contact",contactTitle1:"Let's launch a site",contactTitle2:"you will want to show.",
-    contactLead:"Message us on Telegram, briefly describe the task and get a clear next step: format, timeline, budget and what can be strengthened from the start.",
-    contactCta:"Message @zenggen",contactServices:"View services",contactCardSmall:"Telegram",contactCardText:"For now, one contact point keeps every request in one place.",
-    footerNav:"Navigation",footerContact:"Contact",footerServices:"Formats",footerCity:"Astana, Kazakhstan",rights:"All rights reserved.",
-    themeLabel:"Toggle theme",menuLabel:"Menu"
-  }
-};;
+  en: {
+    lang: "EN",
+    theme: "Theme",
+    loaderKicker: "SPECTRAL LAUNCH SEQUENCE",
+    loaderTitle: "Tuning the signal",
+    loaderText: "Light, meaning and the request converge into one point.",
+    hello: "Hello!",
+    question: "What should we call you?",
+    namePlaceholder: "Your name",
+    start: "Start sequence",
+    scroll: "Scroll or arrows switch scenes",
+    next: "Next",
+    back: "Back",
+    skip: "Skip to form",
+    nav: ["Entry", "Team", "Process", "Cases", "Form"],
+    bridgeAbout: "Great! Let me tell you more about us",
+    bridgeWork: "Now a little about how we work",
+    bridgeCases: "See it in finished examples:",
+    bridgeFinal: "Final transition. If the signal matched - leave a quick contact.",
+    aboutKicker: "SPECTRAL / full-cycle team",
+    aboutTitleA: "We build sites",
+    aboutTitleB: "that sell.",
+    aboutLead:
+      "We connect strategy, visual systems, UX, motion and code so the site does not just look premium, but brings leads and helps the business speak clearly.",
+    points: [
+      ["Fast launch", "The first working version can be published in 1-2 weeks."],
+      ["Conversion focus", "Structure, copy and animation guide people toward a clear action."],
+      ["Transparent process", "You see stages, decisions and the next step without fog or endless edits."],
+      ["Visual character", "No template assembly. We shape the visual language around the business goal."],
+    ],
+    workKicker: "how we work",
+    workTitle: "From idea to launch without chaos.",
+    workLead:
+      "You can replace this copy later. For now, the structure is here: goal, page scenario, design, development and launch.",
+    workSteps: [
+      ["01", "Discovery", "Placeholder copy about audience, offer, competitors and business pain."],
+      ["02", "Scenario", "Placeholder copy about page structure and the user's path to a request."],
+      ["03", "Design", "Placeholder copy about graphics, responsive layout, color, animation and premium feel."],
+      ["04", "Launch", "Placeholder copy about markup, speed, testing, analytics and publishing."],
+    ],
+    casesKicker: "finished projects",
+    casesTitle: "Choose a case from the showcase.",
+    casesLead:
+      "Cards stand like game artifacts: the selected site lights up, and a short project story appears next to it.",
+    caseHint: "Press → to select the first case",
+    caseEmpty:
+      "Select a case first. The card will glow with white edges, grow slightly, and the short website story will appear on the right.",
+    selectedLabel: "selected case",
+    openCase: "Open website",
+    cases: [
+      {
+        name: "Champion Fitness",
+        url: "https://champion-fitness.kz/",
+        domain: "champion-fitness.kz",
+        tags: ["branch network", "fitness", "sales"],
+        palette: "linear-gradient(135deg,#2c2105,#d6a816 54%,#ffdf67)",
+        summary:
+          "Website for a network of 8 fitness clubs in Astana. Built as a commercial hub: memberships, franchise, shop and a clear route to inquiry. Style: athletic, confident, dark premium.",
+      },
+      {
+        name: "Bapcare",
+        url: "https://bapcare.com",
+        domain: "bapcare.com",
+        tags: ["AI", "beauty", "product"],
+        palette: "linear-gradient(135deg,#073a32,#27b88f 56%,#b7f3dc)",
+        summary:
+          "Landing page for an AI face analysis service. Product-focused story: scanner, Face Score and a personal care plan. Style: clean, tech-forward and light.",
+      },
+      {
+        name: "Champion School",
+        url: "https://championschool.kz",
+        domain: "championschool.kz",
+        tags: ["education", "leads", "fitness"],
+        palette: "linear-gradient(135deg,#030405,#10141b 56%,#2b3038)",
+        summary:
+          "Landing page for a fitness trainer school, built for offline and online student acquisition. Style: energetic, educational and conversion-focused.",
+      },
+      {
+        name: "Koroid Agency",
+        url: "https://koroid.agency",
+        domain: "koroid.agency",
+        tags: ["agency", "motion", "branding"],
+        palette: "linear-gradient(135deg,#050505,#202228 56%,#747982)",
+        summary:
+          "Image website for a digital agency. The goal was strong brand presence, dark aesthetics and rich movement. Style: bold, cinematic, motion-first.",
+      },
+    ],
+    ctaQuestion: (name) => `Did we manage to interest you, ${name}?`,
+    ctaAnswer: "If yes, fill out the form so we can contact you",
+    formKicker: "final contact",
+    formTitle: "Share the minimum. We will clarify the rest in conversation.",
+    formLead:
+      "For now, the form does not submit anywhere. It shows the information we will collect: contact details and the site idea.",
+    contactLabel: "Contact",
+    contactPlaceholder: "Telegram, phone or WhatsApp",
+    ideaLabel: "Website idea",
+    ideaPlaceholder: "For example: fitness-club site, lead generation, product launch...",
+    submit: "Build brief",
+    copyBrief: "Copy brief",
+    copied: "Copied",
+    openTelegram: "Open Telegram",
+    resultTitle: "Brief assembled.",
+    resultText: "You can copy it and send it to Telegram @zenggen.",
+  },
+};
 
-export default function Home() {
+const sceneAccent = [
+  ["#8fc7ef", "#7de4d8", "#ffad9d"],
+  ["#7de4d8", "#ffad9d", "#f3cb73"],
+  ["#7de4d8", "#f3cb73", "#8fc7ef"],
+  ["#f3cb73", "#8fc7ef", "#ffad9d"],
+  ["#ffad9d", "#8fc7ef", "#7de4d8"],
+  ["#8fc7ef", "#f3cb73", "#ffad9d"],
+  ["#f3cb73", "#7de4d8", "#8fc7ef"],
+  ["#ffad9d", "#7de4d8", "#f3cb73"],
+  ["#8fc7ef", "#ffad9d", "#7de4d8"],
+];
+
+const emptyForm = { contact: "", idea: "" };
+
+function buildBrief({ contact, idea }, name, lang) {
+  const ru = lang === "ru";
+  return [
+    ru ? "Новая заявка SPECTRAL" : "New SPECTRAL request",
+    `${ru ? "Имя" : "Name"}: ${name || "-"}`,
+    `${ru ? "Контакт" : "Contact"}: ${contact || "-"}`,
+    `${ru ? "Идея сайта" : "Website idea"}: ${idea || "-"}`,
+  ].join("\n");
+}
+
+function useTyping(text, active, speed = 38, delay = 0) {
+  const [value, setValue] = useState("");
+
   useEffect(() => {
-    const root = document.documentElement;
-    const nav = document.getElementById("nav");
-    const progress = document.getElementById("progress");
-    const burger = document.getElementById("burger");
-    const navlinks = document.getElementById("navlinks");
-    const themeToggle = document.getElementById("themeToggle");
-    const metaDescription = document.querySelector('meta[name="description"]');
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    const year = document.getElementById("yr");
-    const abort = new AbortController();
-    const { signal } = abort;
-
-    if (year) year.textContent = String(new Date().getFullYear());
-
-    function setLanguage(lang) {
-      const next = copy[lang] ? lang : "ru";
-      root.lang = next;
-      localStorage.setItem("spectral-lang", next);
-      document.querySelectorAll("[data-i18n]").forEach((el) => {
-        const value = copy[next][el.dataset.i18n];
-        if (value) el.textContent = value;
-      });
-      document.title = copy[next].metaTitle;
-      metaDescription?.setAttribute("content", copy[next].metaDescription);
-      themeToggle?.setAttribute("aria-label", copy[next].themeLabel);
-      burger?.setAttribute("aria-label", copy[next].menuLabel);
-      document.querySelectorAll(".lang-btn").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.lang === next);
-        btn.setAttribute("aria-pressed", String(btn.dataset.lang === next));
-      });
+    if (!active) {
+      setValue("");
+      return undefined;
     }
 
-    function setTheme(theme) {
-      const next = theme === "dark" ? "dark" : "light";
-      root.dataset.theme = next;
-      localStorage.setItem("spectral-theme", next);
-      themeToggle?.setAttribute("aria-pressed", String(next === "dark"));
-      metaTheme?.setAttribute("content", next === "dark" ? "#0d1117" : "#f6f2ea");
-    }
-
-    const savedLang = localStorage.getItem("spectral-lang") || (navigator.language.toLowerCase().startsWith("ru") ? "ru" : "en");
-    const savedTheme = localStorage.getItem("spectral-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    setTheme(savedTheme);
-    setLanguage(savedLang);
-
-    document.querySelectorAll(".lang-btn").forEach((btn) => {
-      btn.addEventListener("click", () => setLanguage(btn.dataset.lang), { signal });
-    });
-    themeToggle?.addEventListener("click", () => setTheme(root.dataset.theme === "dark" ? "light" : "dark"), { signal });
-
-    function onScroll() {
-      const y = window.scrollY;
-      nav?.classList.toggle("scrolled", y > 24);
-      const h = document.documentElement.scrollHeight - window.innerHeight;
-      if (progress) progress.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
-    }
-    window.addEventListener("scroll", onScroll, { passive: true, signal });
-    onScroll();
-
-    burger?.addEventListener("click", () => {
-      burger.classList.toggle("x");
-      navlinks?.classList.toggle("open");
-    }, { signal });
-    navlinks?.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        burger?.classList.remove("x");
-        navlinks.classList.remove("open");
-      }, { signal });
-    });
-
-    const readyFrame = requestAnimationFrame(() => document.body.classList.add("is-ready"));
-    window.addEventListener("load", () => document.body.classList.add("is-ready"), { signal });
-
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const parent = entry.target.parentElement;
-        const group = parent ? [...parent.querySelectorAll("[data-reveal]")] : [];
-        const index = Math.max(0, group.indexOf(entry.target));
-        entry.target.style.transitionDelay = Math.min(index, 6) * 70 + "ms";
-        entry.target.classList.add("in");
-        revealObserver.unobserve(entry.target);
-      });
-    }, { threshold: 0.14, rootMargin: "0px 0px -7% 0px" });
-    document.querySelectorAll("[data-reveal]").forEach((el) => revealObserver.observe(el));
-
-    const processGrid = document.getElementById("processGrid");
-    const processObserver = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        processGrid?.classList.add("in");
-        processObserver.disconnect();
-      }
-    }, { threshold: 0.28 });
-    if (processGrid) processObserver.observe(processGrid);
-
-    const stage = document.getElementById("prismStage");
-    if (matchMedia("(pointer:fine)").matches && stage) {
-      stage.addEventListener("pointermove", (event) => {
-        const rect = stage.getBoundingClientRect();
-        const mx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-        const my = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-        stage.style.setProperty("--mx", mx.toFixed(3));
-        stage.style.setProperty("--my", my.toFixed(3));
-      }, { signal });
-      stage.addEventListener("pointerleave", () => {
-        stage.style.setProperty("--mx", "0");
-        stage.style.setProperty("--my", "0");
-      }, { signal });
-    }
-
-    if (matchMedia("(pointer:fine)").matches) {
-      document.querySelectorAll(".tilt").forEach((card) => {
-        card.addEventListener("pointermove", (event) => {
-          const rect = card.getBoundingClientRect();
-          const x = (event.clientX - rect.left) / rect.width - 0.5;
-          const y = (event.clientY - rect.top) / rect.height - 0.5;
-          card.style.transform = `rotateX(${(-y * 3).toFixed(2)}deg) rotateY(${(x * 3).toFixed(2)}deg) translateY(-4px)`;
-        }, { signal });
-        card.addEventListener("pointerleave", () => {
-          card.style.transform = "";
-        }, { signal });
-      });
-    }
+    setValue("");
+    let index = 0;
+    let interval;
+    const timeout = window.setTimeout(() => {
+      interval = window.setInterval(() => {
+        index += 1;
+        setValue(text.slice(0, index));
+        if (index >= text.length) window.clearInterval(interval);
+      }, speed);
+    }, delay);
 
     return () => {
-      abort.abort();
-      cancelAnimationFrame(readyFrame);
-      revealObserver.disconnect();
-      processObserver.disconnect();
-      document.body.classList.remove("is-ready");
+      window.clearTimeout(timeout);
+      window.clearInterval(interval);
     };
+  }, [active, delay, speed, text]);
+
+  return value;
+}
+
+function useMorphTyping(first, second, active) {
+  const [value, setValue] = useState("");
+  const [phase, setPhase] = useState("first");
+
+  useEffect(() => {
+    if (!active) {
+      setValue("");
+      setPhase("first");
+      return undefined;
+    }
+
+    let cancelled = false;
+    const timers = [];
+    const wait = (ms) => new Promise((resolve) => timers.push(window.setTimeout(resolve, ms)));
+
+    async function run() {
+      setPhase("first");
+      setValue("");
+      for (let i = 1; i <= first.length; i += 1) {
+        if (cancelled) return;
+        setValue(first.slice(0, i));
+        await wait(34);
+      }
+      await wait(1100);
+      for (let i = first.length; i >= 0; i -= 1) {
+        if (cancelled) return;
+        setValue(first.slice(0, i));
+        await wait(18);
+      }
+      setPhase("second");
+      await wait(260);
+      for (let i = 1; i <= second.length; i += 1) {
+        if (cancelled) return;
+        setValue(second.slice(0, i));
+        await wait(30);
+      }
+    }
+
+    run();
+    return () => {
+      cancelled = true;
+      timers.forEach(window.clearTimeout);
+    };
+  }, [active, first, second]);
+
+  return { value, phase, done: active && phase === "second" && value.length >= second.length };
+}
+
+export default function Home() {
+  const [lang, setLang] = useState("ru");
+  const [theme, setTheme] = useState("dark");
+  const [booting, setBooting] = useState(true);
+  const [scene, setScene] = useState(0);
+  const [name, setName] = useState("");
+  const [nameTouched, setNameTouched] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [sent, setSent] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [selectedCase, setSelectedCase] = useState(null);
+  const [bursts, setBursts] = useState([]);
+  const sceneRef = useRef(scene);
+  const lockRef = useRef(false);
+  const touchRef = useRef(0);
+  const nameInputRef = useRef(null);
+  const c = copy[lang];
+  const lastScene = 8;
+  const visibleNavScenes = [0, 2, 4, 6, lastScene];
+  const bridgeSceneText = {
+    1: c.bridgeAbout,
+    3: c.bridgeWork,
+    5: c.bridgeCases,
+    7: c.bridgeFinal,
+  }[scene];
+  const displayName = name.trim() || (lang === "ru" ? "друг" : "friend");
+  const [accentA, accentB, accentC] = sceneAccent[scene];
+  const helloText = useTyping(c.hello, !booting && scene === 0, 52, 280);
+  const questionText = useTyping(c.question, !booting && scene === 0 && helloText === c.hello, 34, 220);
+  const cta = useMorphTyping(c.ctaQuestion(displayName), c.ctaAnswer, !booting && scene === lastScene);
+  const brief = useMemo(() => buildBrief(form, displayName, lang), [displayName, form, lang]);
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem("spectral-lang");
+    const savedTheme = localStorage.getItem("spectral-theme");
+    if (savedLang === "ru" || savedLang === "en") setLang(savedLang);
+    if (savedTheme === "light" || savedTheme === "dark") setTheme(savedTheme);
+    const timer = window.setTimeout(() => setBooting(false), 1900);
+    return () => window.clearTimeout(timer);
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: landingMarkup }} />;
+  useEffect(() => {
+    sceneRef.current = scene;
+  }, [scene]);
+
+  useEffect(() => {
+    if (scene === 6) setSelectedCase(null);
+  }, [scene]);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dataset.theme = theme;
+    document.title = lang === "ru" ? "SPECTRAL - сайт как запуск" : "SPECTRAL - website as launch sequence";
+    localStorage.setItem("spectral-lang", lang);
+    localStorage.setItem("spectral-theme", theme);
+  }, [lang, theme]);
+
+  useEffect(() => {
+    if (booting || !bridgeSceneText) return undefined;
+    const timer = window.setTimeout(() => {
+      goTo(scene + 1);
+    }, Math.min(5200, 1450 + bridgeSceneText.length * 32));
+    return () => window.clearTimeout(timer);
+  }, [booting, bridgeSceneText, scene]);
+
+  function playBootSound() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const audio = new AudioContext();
+      const gain = audio.createGain();
+      gain.gain.setValueAtTime(0.0001, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.045, audio.currentTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.46);
+      gain.connect(audio.destination);
+      [110, 165, 247].forEach((freq, index) => {
+        const oscillator = audio.createOscillator();
+        oscillator.type = index === 0 ? "sine" : "triangle";
+        oscillator.frequency.setValueAtTime(freq, audio.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(freq * 1.45, audio.currentTime + 0.36);
+        oscillator.connect(gain);
+        oscillator.start(audio.currentTime + index * 0.035);
+        oscillator.stop(audio.currentTime + 0.5);
+      });
+    } catch {
+      // Browser autoplay policies may block startup sound until a user gesture.
+    }
+  }
+
+  function addBurst(x = window.innerWidth / 2, y = window.innerHeight / 2, big = false) {
+    setBursts((items) => [...items.slice(-8), { id: crypto.randomUUID(), x, y, big }]);
+  }
+
+  function goTo(next) {
+    const target = Math.max(0, Math.min(lastScene, next));
+    if (target === sceneRef.current) return;
+    if (sceneRef.current === 0 && target > 0 && !name.trim()) {
+      setNameTouched(true);
+      nameInputRef.current?.focus();
+      addBurst(window.innerWidth / 2, window.innerHeight / 2, true);
+      return;
+    }
+    sceneRef.current = target;
+    setScene(target);
+    addBurst(window.innerWidth / 2, window.innerHeight / 2, true);
+  }
+
+  useEffect(() => {
+    function unlock() {
+      window.setTimeout(() => {
+        lockRef.current = false;
+      }, 920);
+    }
+
+    function onWheel(event) {
+      const tag = event.target?.tagName?.toLowerCase();
+      if (booting || tag === "input" || tag === "textarea") return;
+      if (Math.abs(event.deltaY) < 24) return;
+      event.preventDefault();
+      if (lockRef.current) return;
+      lockRef.current = true;
+      goTo(sceneRef.current + (event.deltaY > 0 ? 1 : -1));
+      unlock();
+    }
+
+    function onKeyDown(event) {
+      if (booting) return;
+      if (sceneRef.current === 6 && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
+        event.preventDefault();
+        setSelectedCase((current) => {
+          if (current === null) return 0;
+          const direction = event.key === "ArrowRight" ? 1 : -1;
+          return Math.max(0, Math.min(c.cases.length - 1, current + direction));
+        });
+        addBurst(window.innerWidth * 0.58, window.innerHeight * 0.5, event.key === "ArrowRight");
+        return;
+      }
+      if (event.key === "ArrowDown" || event.key === "PageDown") goTo(sceneRef.current + 1);
+      if (event.key === "ArrowUp" || event.key === "PageUp") goTo(sceneRef.current - 1);
+      if (event.key === "End") goTo(lastScene);
+      if (event.key === "Home") goTo(0);
+    }
+
+    function onTouchStart(event) {
+      touchRef.current = event.touches[0]?.clientY || 0;
+    }
+
+    function onTouchEnd(event) {
+      const end = event.changedTouches[0]?.clientY || 0;
+      const delta = touchRef.current - end;
+      if (Math.abs(delta) > 42) goTo(sceneRef.current + (delta > 0 ? 1 : -1));
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [booting, lastScene]);
+
+  function startExperience() {
+    if (!name.trim()) {
+      setNameTouched(true);
+      nameInputRef.current?.focus();
+      return;
+    }
+    playBootSound();
+    goTo(1);
+  }
+
+  function updateForm(event) {
+    const { name: field, value } = event.target;
+    setForm((values) => ({ ...values, [field]: value }));
+    setSent(false);
+    setCopied(false);
+  }
+
+  async function copyBrief() {
+    try {
+      await navigator.clipboard.writeText(brief);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  function submit(event) {
+    event.preventDefault();
+    setSent(true);
+    addBurst(window.innerWidth * 0.72, window.innerHeight * 0.58, true);
+  }
+
+  return (
+    <main
+      className="experience-shell"
+      onPointerDown={(event) => addBurst(event.clientX, event.clientY)}
+      style={{
+        "--accent-a": accentA,
+        "--accent-b": accentB,
+        "--accent-c": accentC,
+        "--progress": `${(scene / lastScene) * 100}%`,
+      }}
+    >
+      <Loader booting={booting} c={c} onSkip={() => setBooting(false)} />
+
+      <div className="ambient-field" aria-hidden="true">
+        <span className="orb one" />
+        <span className="orb two" />
+        <span className="orb three" />
+        <span className="noise" />
+      </div>
+
+      <header className="topline">
+        <button className="brand-pill" onClick={() => goTo(0)} type="button">
+          <span className="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 44 44" fill="none">
+              <rect x="12" y="10" width="12" height="24" rx="1.5" transform="rotate(13 18 22)" stroke="currentColor" strokeWidth="1.7" />
+              <path d="M27 15.5 40 12.5" stroke="var(--accent-a)" strokeWidth="2.8" strokeLinecap="round" />
+              <path d="M28 22 40 22" stroke="var(--accent-b)" strokeWidth="2.8" strokeLinecap="round" />
+              <path d="M27 28.5 40 31.5" stroke="var(--accent-c)" strokeWidth="2.8" strokeLinecap="round" />
+            </svg>
+          </span>
+          <b>SPECTRAL</b>
+        </button>
+        <nav className="scene-dots" aria-label="Scenes">
+          {visibleNavScenes.map((sceneIndex, index) => (
+            <button className={scene === sceneIndex ? "active" : ""} key={c.nav[index]} onClick={() => goTo(sceneIndex)} type="button">
+              <i>{`0${index + 1}`}</i>
+              {c.nav[index]}
+            </button>
+          ))}
+        </nav>
+        <div className="top-actions">
+          <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+            {c.theme}
+          </button>
+          <button type="button" onClick={() => setLang(lang === "ru" ? "en" : "ru")}>
+            {c.lang}
+          </button>
+        </div>
+      </header>
+
+      <div className="timeline" aria-hidden="true">
+        <i />
+      </div>
+
+      <PrismAtmosphere />
+
+      <section className="scene-layer">
+        <article className={`scene intro-scene ${scene === 0 ? "active" : ""}`}>
+          <div className="intro-dialog">
+            <h1 className="typed-gradient">
+              {helloText}
+              <span />
+            </h1>
+            <p className="typed-question">
+              {questionText}
+              {questionText ? <span /> : null}
+            </p>
+            <div className={`name-console ${nameTouched && !name.trim() ? "needs-name" : ""}`}>
+              <input
+                ref={nameInputRef}
+                aria-label={c.question}
+                onChange={(event) => {
+                  setName(event.target.value);
+                  setNameTouched(false);
+                }}
+                onFocus={playBootSound}
+                placeholder={c.namePlaceholder}
+                value={name}
+              />
+              <button type="button" onClick={startExperience}>
+                {c.start}
+              </button>
+            </div>
+            <small>{c.scroll}</small>
+          </div>
+        </article>
+
+        <BridgeScene active={scene === 1} text={c.bridgeAbout} />
+
+        <article className={`scene about-scene ${scene === 2 ? "active" : ""}`}>
+          <div className="copy-column">
+            <small className="kicker">{c.aboutKicker}</small>
+            <h2>
+              <span>{c.aboutTitleA}</span>
+              <span>{c.aboutTitleB}</span>
+            </h2>
+            <p>{c.aboutLead}</p>
+          </div>
+          <div className="business-grid">
+            {c.points.map(([title, text], index) => (
+              <div className="business-card" key={title} style={{ "--delay": `${index * 95}ms` }}>
+                <i>{`0${index + 1}`}</i>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <BridgeScene active={scene === 3} text={c.bridgeWork} />
+
+        <article className={`scene work-scene ${scene === 4 ? "active" : ""}`}>
+          <div className="copy-column wide">
+            <small className="kicker">{c.workKicker}</small>
+            <h2>{c.workTitle}</h2>
+            <p>{c.workLead}</p>
+          </div>
+          <div className="work-rail">
+            {c.workSteps.map(([number, title, text], index) => (
+              <div className="work-step" key={number} style={{ "--delay": `${index * 100}ms` }}>
+                <span>{number}</span>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <BridgeScene active={scene === 5} text={c.bridgeCases} />
+
+        <article className={`scene cases-scene ${scene === 6 ? "active" : ""}`}>
+          <div className="copy-column case-copy">
+            <small className="kicker">{c.casesKicker}</small>
+            <h2>{c.casesTitle}</h2>
+            <p>{c.casesLead}</p>
+            <button className="case-key" onClick={() => setSelectedCase(0)} type="button">
+              <span aria-hidden="true" />
+              <b>{c.caseHint}</b>
+            </button>
+          </div>
+          <CaseGallery c={c} selectedCase={selectedCase} setSelectedCase={setSelectedCase} />
+        </article>
+
+        <BridgeScene active={scene === 7} text={c.bridgeFinal} />
+
+        <article className={`scene contact-scene ${scene === lastScene ? "active" : ""}`}>
+          <div className="cta-type">
+            <small className="kicker">{c.formKicker}</small>
+            <h2 className={cta.phase === "second" ? "with-arrow" : ""}>
+              {cta.value}
+              <span />
+            </h2>
+            <p>{c.formLead}</p>
+          </div>
+          <form className={`final-form ${cta.done ? "show" : ""}`} onSubmit={submit}>
+            <div>
+              <small>{c.formKicker}</small>
+              <h3>{c.formTitle}</h3>
+            </div>
+            <label>
+              <span>{c.contactLabel}</span>
+              <input name="contact" onChange={updateForm} placeholder={c.contactPlaceholder} required value={form.contact} />
+            </label>
+            <label>
+              <span>{c.ideaLabel}</span>
+              <textarea name="idea" onChange={updateForm} placeholder={c.ideaPlaceholder} required rows="5" value={form.idea} />
+            </label>
+            <button className="submit-btn" type="submit">
+              {c.submit}
+            </button>
+            {sent ? (
+              <div className="result">
+                <strong>{c.resultTitle}</strong>
+                <p>{c.resultText}</p>
+                <div>
+                  <button type="button" onClick={copyBrief}>
+                    {copied ? c.copied : c.copyBrief}
+                  </button>
+                  <a href={telegramUrl} target="_blank" rel="noreferrer">
+                    {c.openTelegram}
+                  </a>
+                </div>
+              </div>
+            ) : null}
+          </form>
+        </article>
+      </section>
+
+      <footer className="bottom-controls">
+        <button disabled={scene === 0} onClick={() => goTo(scene - 1)} type="button">
+          {c.back}
+        </button>
+        <button onClick={() => goTo(lastScene)} type="button">
+          {c.skip}
+        </button>
+        <button disabled={scene === lastScene} onClick={() => goTo(scene + 1)} type="button">
+          {c.next}
+        </button>
+      </footer>
+
+      <div className="bursts" aria-hidden="true">
+        {bursts.map((item) => (
+          <span className={item.big ? "burst big" : "burst"} key={item.id} style={{ left: item.x, top: item.y }} />
+        ))}
+      </div>
+    </main>
+  );
+}
+
+function BridgeScene({ active, text }) {
+  const typed = useTyping(text, active, 32, 120);
+
+  return (
+    <article className={`scene bridge-scene ${active ? "active" : ""}`}>
+      <div className="bridge-copy">
+        <span className="bridge-orb" />
+        <div className="bridge-loader" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
+        <h2>
+          {typed}
+          <span />
+        </h2>
+      </div>
+    </article>
+  );
+}
+
+function CaseGallery({ c, selectedCase, setSelectedCase }) {
+  const cases = [c.cases[3], c.cases[0], c.cases[1], c.cases[2]].filter(Boolean);
+  const trackRef = useRef(null);
+  const itemRefs = useRef([]);
+  const current = selectedCase === null ? null : cases[selectedCase];
+
+  useEffect(() => {
+    const track = trackRef.current;
+    const item = selectedCase === null ? itemRefs.current[0] : itemRefs.current[selectedCase];
+    if (!track || !item) return;
+    const targetLeft =
+      selectedCase === null ? 0 : item.offsetLeft - (track.clientWidth - item.clientWidth) / 2;
+    track.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
+  }, [selectedCase]);
+
+  function chooseCase(index) {
+    if (index === selectedCase) {
+      window.open(cases[index].url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    setSelectedCase(index);
+  }
+
+  return (
+    <div className={`case-gallery ${current ? "has-selection" : ""}`}>
+      <div className="case-track" ref={trackRef} role="list">
+        {cases.map((item, index) => (
+          <button
+            className={`case-token ${index === selectedCase ? "selected" : ""}`}
+            key={item.name}
+            onClick={() => chooseCase(index)}
+            ref={(node) => {
+              itemRefs.current[index] = node;
+            }}
+            role="listitem"
+            style={{ "--case-bg": item.palette, "--delay": `${index * 90}ms` }}
+            type="button"
+          >
+            <span className="case-number">{`0${index + 1}`}</span>
+            <span className="case-screen">
+              <b>{item.name.split(" ").map((word) => word[0]).join("").slice(0, 3)}</b>
+              <em>{item.domain}</em>
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="case-card-note">{item.tags.join(" / ")}</span>
+            <strong>{item.name}</strong>
+            <small>{item.domain}</small>
+          </button>
+        ))}
+      </div>
+
+      <aside className={`case-detail ${current ? "show" : "empty"}`}>
+        {current ? (
+          <>
+            <small>{c.selectedLabel}</small>
+            <h3>{current.name}</h3>
+            <p>{current.summary}</p>
+            <div className="case-tags">
+              {current.tags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
+            <a href={current.url} target="_blank" rel="noreferrer">
+              {c.openCase}
+            </a>
+          </>
+        ) : (
+          <>
+            <small>standby</small>
+            <h3>→</h3>
+            <p>{c.caseEmpty}</p>
+          </>
+        )}
+      </aside>
+    </div>
+  );
+}
+
+function Loader({ booting, c, onSkip }) {
+  return (
+    <div className={`site-loader ${booting ? "show" : "hide"}`} aria-hidden={!booting}>
+      <div className="loader-shell">
+        <div className="loader-orbit" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <svg className="loader-prism" viewBox="0 0 420 250" fill="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="loaderPrismFill" x1="172" y1="45" x2="252" y2="210" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#ffffff" stopOpacity=".92" />
+              <stop offset=".55" stopColor="#b8c5d2" stopOpacity=".35" />
+              <stop offset="1" stopColor="#ffffff" stopOpacity=".72" />
+            </linearGradient>
+            <filter id="loaderGlow" x="-30%" y="-60%" width="160%" height="220%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path className="loader-ray loader-in" d="M28 122 L168 122" />
+          <path className="loader-core-ray" d="M168 122 L242 122" />
+          <g className="loader-prism-core">
+            <path d="M172 47 268 91 238 217 142 174Z" fill="url(#loaderPrismFill)" opacity=".52" />
+            <path d="M172 47 268 91 238 217 142 174Z" stroke="#f7f1e7" strokeWidth="3.4" strokeLinejoin="round" />
+            <path d="M172 47 185 35 282 78 268 91Z" fill="#101827" stroke="#f7f1e7" strokeWidth="3.4" strokeLinejoin="round" />
+            <path d="M184 84 238 107 218 183 163 159Z" stroke="#f7f1e7" strokeOpacity=".55" strokeWidth="2.2" />
+            <path className="loader-prism-shine" d="M183 64 152 175" stroke="#fff" strokeWidth="7" strokeLinecap="round" opacity=".18" />
+          </g>
+          <g filter="url(#loaderGlow)">
+            <path className="loader-ray loader-blue" d="M242 122 L392 54" />
+            <path className="loader-ray loader-teal" d="M242 122 L394 122" />
+            <path className="loader-ray loader-coral" d="M242 122 L392 195" />
+          </g>
+          <circle className="loader-spark" cx="168" cy="122" r="4" />
+          <circle className="loader-spark split" cx="242" cy="122" r="4" />
+        </svg>
+        <div className="loader-copy">
+          <small>{c.loaderKicker}</small>
+          <strong>SPECTRAL</strong>
+          <span>{c.loaderText}</span>
+        </div>
+        <button type="button" onClick={onSkip}>
+          {c.skip}
+        </button>
+        <div className="loader-progress" aria-hidden="true">
+          <i />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrismAtmosphere() {
+  return (
+    <div className="prism-atmosphere" aria-hidden="true">
+      <svg viewBox="0 0 940 680" fill="none">
+        <defs>
+          <linearGradient id="beamA" x1="466" y1="310" x2="900" y2="160" gradientUnits="userSpaceOnUse">
+            <stop stopColor="var(--accent-a)" stopOpacity=".95" />
+            <stop offset="1" stopColor="var(--accent-a)" stopOpacity=".08" />
+          </linearGradient>
+          <linearGradient id="beamB" x1="466" y1="340" x2="900" y2="340" gradientUnits="userSpaceOnUse">
+            <stop stopColor="var(--accent-b)" stopOpacity=".96" />
+            <stop offset="1" stopColor="var(--accent-b)" stopOpacity=".08" />
+          </linearGradient>
+          <linearGradient id="beamC" x1="466" y1="370" x2="900" y2="540" gradientUnits="userSpaceOnUse">
+            <stop stopColor="var(--accent-c)" stopOpacity=".95" />
+            <stop offset="1" stopColor="var(--accent-c)" stopOpacity=".08" />
+          </linearGradient>
+          <filter id="beamGlow" x="-20%" y="-30%" width="150%" height="170%">
+            <feGaussianBlur stdDeviation="10" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <circle className="scene-ring" cx="470" cy="340" r="284" />
+        <path className="straight-input one" d="M70 282 L354 340" />
+        <path className="straight-input two" d="M70 340 L354 340" />
+        <path className="straight-input three" d="M70 398 L354 340" />
+        <path className="inside-ray" d="M354 340 L466 340" />
+        <g className="hero-prism">
+          <path d="M360 138 540 222 482 568 300 482Z" fill="rgba(255,255,255,.13)" />
+          <path d="M360 138 540 222 482 568 300 482Z" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
+          <path d="M360 138 390 110 570 194 540 222Z" fill="rgba(255,255,255,.08)" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
+          <path d="M396 238 490 282 445 462 350 416Z" stroke="currentColor" strokeOpacity=".46" strokeWidth="3" />
+          <path className="glass-shine" d="M396 165 324 482" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
+        </g>
+        <g className="beam-fan" filter="url(#beamGlow)">
+          <path d="M466 340 L900 136 L900 226 Z" fill="url(#beamA)" />
+          <path d="M466 340 L904 292 L904 390 Z" fill="url(#beamB)" />
+          <path d="M466 340 L900 470 L900 620 Z" fill="url(#beamC)" />
+          <path className="beam-line blue" d="M486 318 L870 160" />
+          <path className="beam-line teal" d="M486 340 L870 340" />
+          <path className="beam-line coral" d="M486 362 L870 548" />
+        </g>
+        <circle className="white-spark entry" cx="354" cy="340" r="5" />
+        <circle className="white-spark split" cx="466" cy="340" r="5" />
+      </svg>
+    </div>
+  );
 }

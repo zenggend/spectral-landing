@@ -1,26 +1,27 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "SPECTRAL - веб-студия, которая превращает дизайн в заявки",
-  description: "SPECTRAL - веб-студия полного цикла. Проектируем, разрабатываем и запускаем сайты с сильной визуальной системой, быстрым кодом и фокусом на конверсии.",
+  title: "SPECTRAL - кинематографичный сайт для заявок",
+  description:
+    "SPECTRAL проектирует сайты, где первый экран сразу объясняет ценность, собирает контакт и запускает понятный сценарий продаж.",
 };
 
-const themeScript = `try{var t=localStorage.getItem('spectral-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name=\"theme-color\"]');if(m)m.setAttribute('content',t==='dark'?'#0d1117':'#f6f2ea')}catch(e){}`;
+const themeScript = `try{var t=localStorage.getItem('spectral-theme')||'dark';document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#07090d':'#f5efe6')}catch(e){}`;
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru" data-theme="light" suppressHydrationWarning>
+    <html lang="ru" data-theme="dark" suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#f6f2ea" />
+        <meta name="theme-color" content="#07090d" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
           rel="stylesheet"
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
