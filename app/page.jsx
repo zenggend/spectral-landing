@@ -1,18 +1,28 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { DoorOpen, GalleryHorizontalEnd, Moon, Send, Sun, UsersRound, Workflow } from "lucide-react";
+import bapcareShot from "./screenshots/bapcare.png";
+import championFitnessShot from "./screenshots/champion-fitness.png";
+import championSchoolShot from "./screenshots/championschool.png";
+import koroidShot from "./screenshots/koroid.png";
 
 const telegramUrl = "https://t.me/zenggen";
+const navIcons = [DoorOpen, UsersRound, Workflow, GalleryHorizontalEnd, Send];
+const caseScreenshots = {
+  "bapcare.com": bapcareShot.src,
+  "champion-fitness.kz": championFitnessShot.src,
+  "championschool.kz": championSchoolShot.src,
+  "koroid.agency": koroidShot.src,
+};
 
 const copy = {
   ru: {
     lang: "RU",
     theme: "Тема",
-    loaderKicker: "SPECTRAL LAUNCH SEQUENCE",
-    loaderTitle: "Собираем сигнал",
-    loaderText: "Свет, смысл и заявка сходятся в одну точку.",
     hello: "Привет!",
-    question: "Как мне вас называть?",
+    welcome: "Добро пожаловать в Spectral",
+    question: "Как нам стоит вас называть?",
     namePlaceholder: "Ваше имя",
     start: "Запустить сценарий",
     scroll: "Скролл или стрелки переключают сцены",
@@ -112,10 +122,8 @@ const copy = {
   en: {
     lang: "EN",
     theme: "Theme",
-    loaderKicker: "SPECTRAL LAUNCH SEQUENCE",
-    loaderTitle: "Tuning the signal",
-    loaderText: "Light, meaning and the request converge into one point.",
     hello: "Hello!",
+    welcome: "Welcome to Spectral",
     question: "What should we call you?",
     namePlaceholder: "Your name",
     start: "Start sequence",
@@ -249,19 +257,32 @@ function useTyping(text, active, speed = 38, delay = 0) {
     }
 
     setValue("");
-    let index = 0;
-    let interval;
+    const characters = Array.from(text);
+    let frame = 0;
+    let startedAt = 0;
+    let previousIndex = 0;
+
+    function tick(now) {
+      if (!startedAt) startedAt = now;
+
+      const nextIndex = Math.min(characters.length, Math.floor((now - startedAt) / speed) + 1);
+      if (nextIndex !== previousIndex) {
+        previousIndex = nextIndex;
+        setValue(characters.slice(0, nextIndex).join(""));
+      }
+
+      if (nextIndex < characters.length) {
+        frame = window.requestAnimationFrame(tick);
+      }
+    }
+
     const timeout = window.setTimeout(() => {
-      interval = window.setInterval(() => {
-        index += 1;
-        setValue(text.slice(0, index));
-        if (index >= text.length) window.clearInterval(interval);
-      }, speed);
+      frame = window.requestAnimationFrame(tick);
     }, delay);
 
     return () => {
       window.clearTimeout(timeout);
-      window.clearInterval(interval);
+      window.cancelAnimationFrame(frame);
     };
   }, [active, delay, speed, text]);
 
@@ -316,10 +337,31 @@ function useMorphTyping(first, second, active) {
   return { value, phase, done: active && phase === "second" && value.length >= second.length };
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function renderHighlightedText(text, words) {
+  const activeWords = words.filter(Boolean);
+  if (!activeWords.length || !text) return text;
+
+  const expression = new RegExp(`(${activeWords.map(escapeRegExp).join("|")})`, "gi");
+  return text.split(expression).map((part, index) => {
+    const highlighted = activeWords.some((word) => part.toLowerCase() === word.toLowerCase());
+    return highlighted ? (
+      <span className="gradient-word" key={`${part}-${index}`}>
+        {part}
+      </span>
+    ) : (
+      part
+    );
+  });
+}
+
 export default function Home() {
   const [lang, setLang] = useState("ru");
   const [theme, setTheme] = useState("dark");
-  const [booting, setBooting] = useState(true);
+  const booting = false;
   const [scene, setScene] = useState(0);
   const [name, setName] = useState("");
   const [nameTouched, setNameTouched] = useState(false);
@@ -332,9 +374,13 @@ export default function Home() {
   const lockRef = useRef(false);
   const touchRef = useRef(0);
   const nameInputRef = useRef(null);
+  const navRef = useRef(null);
+  const navButtonRefs = useRef([]);
+  const [navMarker, setNavMarker] = useState({ left: 6, width: 0 });
   const c = copy[lang];
   const lastScene = 8;
   const visibleNavScenes = [0, 2, 4, 6, lastScene];
+  const activeNavIndex = Math.min(navIcons.length - 1, Math.max(0, Math.round(scene / 2)));
   const bridgeSceneText = {
     1: c.bridgeAbout,
     3: c.bridgeWork,
@@ -343,9 +389,53 @@ export default function Home() {
   }[scene];
   const displayName = name.trim() || (lang === "ru" ? "друг" : "friend");
   const [accentA, accentB, accentC] = sceneAccent[scene];
-  const helloText = useTyping(c.hello, !booting && scene === 0, 52, 280);
-  const questionText = useTyping(c.question, !booting && scene === 0 && helloText === c.hello, 34, 220);
+
+  // Intro animation phase: hello → welcome → rainbow → fadeOut → nameInput
+  const [introPhase, setIntroPhase] = useState("hello");
+  const helloText = useTyping(c.hello, !booting && scene === 0 && (introPhase === "hello" || introPhase === "welcome" || introPhase === "rainbow"), 52, 280);
+  const welcomeText = useTyping(c.welcome, !booting && scene === 0 && (introPhase === "welcome" || introPhase === "rainbow"), 34, 0);
+  const questionText = useTyping(c.question, !booting && scene === 0 && introPhase === "nameInput", 34, 220);
+
+  // Phase transitions for intro sequence
+  useEffect(() => {
+    if (scene !== 0 || booting) return undefined;
+
+    // hello → welcome: once hello is fully typed
+    if (introPhase === "hello" && helloText === c.hello) {
+      const timer = window.setTimeout(() => setIntroPhase("welcome"), 600);
+      return () => window.clearTimeout(timer);
+    }
+
+    // welcome → rainbow: once welcome text is fully typed
+    if (introPhase === "welcome" && welcomeText === c.welcome) {
+      const timer = window.setTimeout(() => setIntroPhase("rainbow"), 400);
+      return () => window.clearTimeout(timer);
+    }
+
+    // rainbow → fadeOut: hold rainbow glow for a moment
+    if (introPhase === "rainbow") {
+      const timer = window.setTimeout(() => setIntroPhase("fadeOut"), 1200);
+      return () => window.clearTimeout(timer);
+    }
+
+    // fadeOut → nameInput: after fade-out animation completes
+    if (introPhase === "fadeOut") {
+      const timer = window.setTimeout(() => setIntroPhase("nameInput"), 500);
+      return () => window.clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [introPhase, helloText, welcomeText, c.hello, c.welcome, scene, booting]);
+
   const cta = useMorphTyping(c.ctaQuestion(displayName), c.ctaAnswer, !booting && scene === lastScene);
+  const ctaHighlightWords =
+    cta.phase === "second"
+      ? lang === "ru"
+        ? ["форму", "связаться"]
+        : ["form", "contact"]
+      : lang === "ru"
+        ? ["заинтересовать"]
+        : ["manage", "interest"];
   const brief = useMemo(() => buildBrief(form, displayName, lang), [displayName, form, lang]);
 
   useEffect(() => {
@@ -353,13 +443,27 @@ export default function Home() {
     const savedTheme = localStorage.getItem("spectral-theme");
     if (savedLang === "ru" || savedLang === "en") setLang(savedLang);
     if (savedTheme === "light" || savedTheme === "dark") setTheme(savedTheme);
-    const timer = window.setTimeout(() => setBooting(false), 1900);
-    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     sceneRef.current = scene;
   }, [scene]);
+
+  useEffect(() => {
+    function syncNavMarker() {
+      const nav = navRef.current;
+      const button = navButtonRefs.current[activeNavIndex];
+      if (!nav || !button) return;
+      setNavMarker({
+        left: button.offsetLeft,
+        width: button.offsetWidth,
+      });
+    }
+
+    syncNavMarker();
+    window.addEventListener("resize", syncNavMarker);
+    return () => window.removeEventListener("resize", syncNavMarker);
+  }, [activeNavIndex, lang]);
 
   useEffect(() => {
     if (scene === 6) setSelectedCase(null);
@@ -515,7 +619,7 @@ export default function Home() {
 
   return (
     <main
-      className="experience-shell"
+      className={`experience-shell${introPhase === "welcome" || introPhase === "rainbow" ? " intro-rainbow" : ""}${introPhase === "rainbow" ? " intro-rainbow-glow" : ""}`}
       onPointerDown={(event) => addBurst(event.clientX, event.clientY)}
       style={{
         "--accent-a": accentA,
@@ -524,8 +628,6 @@ export default function Home() {
         "--progress": `${(scene / lastScene) * 100}%`,
       }}
     >
-      <Loader booting={booting} c={c} onSkip={() => setBooting(false)} />
-
       <div className="ambient-field" aria-hidden="true">
         <span className="orb one" />
         <span className="orb two" />
@@ -545,20 +647,53 @@ export default function Home() {
           </span>
           <b>SPECTRAL</b>
         </button>
-        <nav className="scene-dots" aria-label="Scenes">
-          {visibleNavScenes.map((sceneIndex, index) => (
-            <button className={scene === sceneIndex ? "active" : ""} key={c.nav[index]} onClick={() => goTo(sceneIndex)} type="button">
-              <i>{`0${index + 1}`}</i>
-              {c.nav[index]}
-            </button>
-          ))}
+        <nav
+          className="scene-dots"
+          aria-label="Scenes"
+          ref={navRef}
+          style={{ "--nav-marker-left": `${navMarker.left}px`, "--nav-marker-width": `${navMarker.width}px` }}
+        >
+          <span className="scene-dots-marker" aria-hidden="true" />
+          {visibleNavScenes.map((sceneIndex, index) => {
+            const Icon = navIcons[index];
+            return (
+              <button
+                className={activeNavIndex === index ? "active" : ""}
+                key={c.nav[index]}
+                onClick={() => goTo(sceneIndex)}
+                ref={(node) => {
+                  navButtonRefs.current[index] = node;
+                }}
+                type="button"
+              >
+                <Icon width={17} height={17} strokeWidth={2.25} aria-hidden="true" />
+                {c.nav[index]}
+              </button>
+            );
+          })}
         </nav>
         <div className="top-actions">
-          <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            {c.theme}
+          <button
+            type="button"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={c.theme}
+            className={`theme-toggle ${theme === "dark" ? "theme-dark" : "theme-light"}`}
+          >
+            <span className="theme-toggle-circle">
+              <span className="theme-toggle-icon">
+                {theme === "dark" ? (
+                  <Moon width={19} height={19} strokeWidth={2.35} aria-hidden="true" />
+                ) : (
+                  <Sun width={19} height={19} strokeWidth={2.35} aria-hidden="true" />
+                )}
+              </span>
+            </span>
+            <span className="theme-toggle-label">
+              {theme === "dark" ? "Night" : "Day"}
+            </span>
           </button>
-          <button type="button" onClick={() => setLang(lang === "ru" ? "en" : "ru")}>
-            {c.lang}
+          <button type="button" onClick={() => setLang(lang === "ru" ? "en" : "ru")} aria-label={c.lang}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </button>
         </div>
       </header>
@@ -567,20 +702,32 @@ export default function Home() {
         <i />
       </div>
 
-      <PrismAtmosphere />
 
       <section className="scene-layer">
         <article className={`scene intro-scene ${scene === 0 ? "active" : ""}`}>
-          <div className="intro-dialog">
+          {/* Phase 1 & 2: Hello + Welcome (fades out together) */}
+          <div className={`intro-dialog intro-greeting${introPhase === "fadeOut" || introPhase === "nameInput" ? " intro-hidden" : ""}`}>
             <h1 className="typed-gradient">
-              {helloText}
-              <span />
+              {introPhase === "hello" || introPhase === "welcome" || introPhase === "rainbow" ? helloText : ""}
+              {introPhase === "hello" ? <span className="typing-caret" /> : null}
             </h1>
+            <p className="typed-welcome">
+              {introPhase === "welcome" || introPhase === "rainbow" ? welcomeText : ""}
+              {introPhase === "welcome" && welcomeText ? <span className="typing-caret" /> : null}
+            </p>
+          </div>
+
+          {/* Phase 4: Name input (appears after fade) */}
+          <div className={`intro-dialog intro-name-phase${introPhase === "nameInput" ? " intro-visible" : ""}`}>
             <p className="typed-question">
               {questionText}
-              {questionText ? <span /> : null}
+              {questionText ? <span className="typing-caret" /> : null}
             </p>
-            <div className={`name-console ${nameTouched && !name.trim() ? "needs-name" : ""}`}>
+            <div
+              className={`name-console ${
+                !booting && scene === 0 && introPhase === "nameInput" && questionText === c.question ? "show" : ""
+              } ${nameTouched && !name.trim() ? "needs-name" : ""}`}
+            >
               <input
                 ref={nameInputRef}
                 aria-label={c.question}
@@ -592,11 +739,10 @@ export default function Home() {
                 placeholder={c.namePlaceholder}
                 value={name}
               />
-              <button type="button" onClick={startExperience}>
-                {c.start}
+              <button type="button" onClick={startExperience} aria-label={c.start}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </button>
             </div>
-            <small>{c.scroll}</small>
           </div>
         </article>
 
@@ -662,13 +808,13 @@ export default function Home() {
           <div className="cta-type">
             <small className="kicker">{c.formKicker}</small>
             <h2 className={cta.phase === "second" ? "with-arrow" : ""}>
-              {cta.value}
-              <span />
+              {renderHighlightedText(cta.value, ctaHighlightWords)}
+              <span className="typing-caret" />
             </h2>
             <p>{c.formLead}</p>
           </div>
           <form className={`final-form ${cta.done ? "show" : ""}`} onSubmit={submit}>
-            <div>
+            <div className="form-heading">
               <small>{c.formKicker}</small>
               <h3>{c.formTitle}</h3>
             </div>
@@ -682,6 +828,7 @@ export default function Home() {
             </label>
             <button className="submit-btn" type="submit">
               {c.submit}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
             {sent ? (
               <div className="result">
@@ -689,9 +836,15 @@ export default function Home() {
                 <p>{c.resultText}</p>
                 <div>
                   <button type="button" onClick={copyBrief}>
+                    {copied ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    )}
                     {copied ? c.copied : c.copyBrief}
                   </button>
                   <a href={telegramUrl} target="_blank" rel="noreferrer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                     {c.openTelegram}
                   </a>
                 </div>
@@ -702,14 +855,14 @@ export default function Home() {
       </section>
 
       <footer className="bottom-controls">
-        <button disabled={scene === 0} onClick={() => goTo(scene - 1)} type="button">
-          {c.back}
+        <button disabled={scene === 0} onClick={() => goTo(scene - 1)} type="button" aria-label={c.back}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         </button>
-        <button onClick={() => goTo(lastScene)} type="button">
-          {c.skip}
+        <button onClick={() => goTo(lastScene)} type="button" aria-label={c.skip}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
         </button>
-        <button disabled={scene === lastScene} onClick={() => goTo(scene + 1)} type="button">
-          {c.next}
+        <button disabled={scene === lastScene} onClick={() => goTo(scene + 1)} type="button" aria-label={c.next}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </footer>
 
@@ -722,8 +875,33 @@ export default function Home() {
   );
 }
 
+
+
+function WorkPreviewCard({ item, index }) {
+  const screenshot = caseScreenshots[item.domain];
+
+  return (
+    <span className="work-preview-card" style={{ "--case-bg": item.palette, "--float-delay": `${index * -0.75}s` }}>
+      {screenshot ? <img src={screenshot} alt="" loading="eager" draggable="false" /> : null}
+    </span>
+  );
+}
+
+function ReviewPreviewCard({ item, index }) {
+  return (
+    <span className="work-preview-card review-preview-card" style={{ "--case-bg": item.palette, "--float-delay": `${index * -0.75}s` }}>
+      <span className="review-mark">“</span>
+      <strong>{item.quote}</strong>
+      <small>
+        {item.name}
+        <em>{item.role}</em>
+      </small>
+    </span>
+  );
+}
+
 function BridgeScene({ active, text }) {
-  const typed = useTyping(text, active, 32, 120);
+  const typed = useTyping(text, active, 56, 180);
 
   return (
     <article className={`scene bridge-scene ${active ? "active" : ""}`}>
@@ -736,7 +914,7 @@ function BridgeScene({ active, text }) {
         </div>
         <h2>
           {typed}
-          <span />
+          <span className="typing-caret" />
         </h2>
       </div>
     </article>
@@ -783,6 +961,7 @@ function CaseGallery({ c, selectedCase, setSelectedCase }) {
           >
             <span className="case-number">{`0${index + 1}`}</span>
             <span className="case-screen">
+              {caseScreenshots[item.domain] ? <img src={caseScreenshots[item.domain]} alt="" loading="lazy" draggable="false" /> : null}
               <b>{item.name.split(" ").map((word) => word[0]).join("").slice(0, 3)}</b>
               <em>{item.domain}</em>
               <i />
@@ -819,115 +998,6 @@ function CaseGallery({ c, selectedCase, setSelectedCase }) {
           </>
         )}
       </aside>
-    </div>
-  );
-}
-
-function Loader({ booting, c, onSkip }) {
-  return (
-    <div className={`site-loader ${booting ? "show" : "hide"}`} aria-hidden={!booting}>
-      <div className="loader-shell">
-        <div className="loader-orbit" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-        <svg className="loader-prism" viewBox="0 0 420 250" fill="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="loaderPrismFill" x1="172" y1="45" x2="252" y2="210" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#ffffff" stopOpacity=".92" />
-              <stop offset=".55" stopColor="#b8c5d2" stopOpacity=".35" />
-              <stop offset="1" stopColor="#ffffff" stopOpacity=".72" />
-            </linearGradient>
-            <filter id="loaderGlow" x="-30%" y="-60%" width="160%" height="220%">
-              <feGaussianBlur stdDeviation="6" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          <path className="loader-ray loader-in" d="M28 122 L168 122" />
-          <path className="loader-core-ray" d="M168 122 L242 122" />
-          <g className="loader-prism-core">
-            <path d="M172 47 268 91 238 217 142 174Z" fill="url(#loaderPrismFill)" opacity=".52" />
-            <path d="M172 47 268 91 238 217 142 174Z" stroke="#f7f1e7" strokeWidth="3.4" strokeLinejoin="round" />
-            <path d="M172 47 185 35 282 78 268 91Z" fill="#101827" stroke="#f7f1e7" strokeWidth="3.4" strokeLinejoin="round" />
-            <path d="M184 84 238 107 218 183 163 159Z" stroke="#f7f1e7" strokeOpacity=".55" strokeWidth="2.2" />
-            <path className="loader-prism-shine" d="M183 64 152 175" stroke="#fff" strokeWidth="7" strokeLinecap="round" opacity=".18" />
-          </g>
-          <g filter="url(#loaderGlow)">
-            <path className="loader-ray loader-blue" d="M242 122 L392 54" />
-            <path className="loader-ray loader-teal" d="M242 122 L394 122" />
-            <path className="loader-ray loader-coral" d="M242 122 L392 195" />
-          </g>
-          <circle className="loader-spark" cx="168" cy="122" r="4" />
-          <circle className="loader-spark split" cx="242" cy="122" r="4" />
-        </svg>
-        <div className="loader-copy">
-          <small>{c.loaderKicker}</small>
-          <strong>SPECTRAL</strong>
-          <span>{c.loaderText}</span>
-        </div>
-        <button type="button" onClick={onSkip}>
-          {c.skip}
-        </button>
-        <div className="loader-progress" aria-hidden="true">
-          <i />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PrismAtmosphere() {
-  return (
-    <div className="prism-atmosphere" aria-hidden="true">
-      <svg viewBox="0 0 940 680" fill="none">
-        <defs>
-          <linearGradient id="beamA" x1="466" y1="310" x2="900" y2="160" gradientUnits="userSpaceOnUse">
-            <stop stopColor="var(--accent-a)" stopOpacity=".95" />
-            <stop offset="1" stopColor="var(--accent-a)" stopOpacity=".08" />
-          </linearGradient>
-          <linearGradient id="beamB" x1="466" y1="340" x2="900" y2="340" gradientUnits="userSpaceOnUse">
-            <stop stopColor="var(--accent-b)" stopOpacity=".96" />
-            <stop offset="1" stopColor="var(--accent-b)" stopOpacity=".08" />
-          </linearGradient>
-          <linearGradient id="beamC" x1="466" y1="370" x2="900" y2="540" gradientUnits="userSpaceOnUse">
-            <stop stopColor="var(--accent-c)" stopOpacity=".95" />
-            <stop offset="1" stopColor="var(--accent-c)" stopOpacity=".08" />
-          </linearGradient>
-          <filter id="beamGlow" x="-20%" y="-30%" width="150%" height="170%">
-            <feGaussianBlur stdDeviation="10" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-        <circle className="scene-ring" cx="470" cy="340" r="284" />
-        <path className="straight-input one" d="M70 282 L354 340" />
-        <path className="straight-input two" d="M70 340 L354 340" />
-        <path className="straight-input three" d="M70 398 L354 340" />
-        <path className="inside-ray" d="M354 340 L466 340" />
-        <g className="hero-prism">
-          <path d="M360 138 540 222 482 568 300 482Z" fill="rgba(255,255,255,.13)" />
-          <path d="M360 138 540 222 482 568 300 482Z" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
-          <path d="M360 138 390 110 570 194 540 222Z" fill="rgba(255,255,255,.08)" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" />
-          <path d="M396 238 490 282 445 462 350 416Z" stroke="currentColor" strokeOpacity=".46" strokeWidth="3" />
-          <path className="glass-shine" d="M396 165 324 482" stroke="currentColor" strokeWidth="8" strokeLinecap="round" />
-        </g>
-        <g className="beam-fan" filter="url(#beamGlow)">
-          <path d="M466 340 L900 136 L900 226 Z" fill="url(#beamA)" />
-          <path d="M466 340 L904 292 L904 390 Z" fill="url(#beamB)" />
-          <path d="M466 340 L900 470 L900 620 Z" fill="url(#beamC)" />
-          <path className="beam-line blue" d="M486 318 L870 160" />
-          <path className="beam-line teal" d="M486 340 L870 340" />
-          <path className="beam-line coral" d="M486 362 L870 548" />
-        </g>
-        <circle className="white-spark entry" cx="354" cy="340" r="5" />
-        <circle className="white-spark split" cx="466" cy="340" r="5" />
-      </svg>
     </div>
   );
 }

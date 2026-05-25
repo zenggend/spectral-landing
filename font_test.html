@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Font Weight Test</title>
+  <style>
+    @font-face {
+      font-family: "ThickerVar";
+      src: url("app/Thicker_Trial/Thicker-Variable-Roman-TRIAL.ttf") format("truetype");
+      font-weight: 100 900;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "ThickerStaticRegular";
+      src: url("app/Thicker_Trial/Thicker-Regular-Upright-TRIAL.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "ThickerStaticLight";
+      src: url("app/Thicker_Trial/Thicker-Light-Upright-TRIAL.ttf") format("truetype");
+      font-weight: 300;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "ThickerStaticBold";
+      src: url("app/Thicker_Trial/Thicker-Bold-Upright-TRIAL.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+    }
+    
+    body {
+      background: #111;
+      color: #fff;
+      padding: 40px;
+      font-size: 24px;
+      line-height: 1.6;
+    }
+    .row {
+      margin-bottom: 25px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+    }
+    .label {
+      color: #7de4d8;
+      font-size: 14px;
+      font-family: monospace;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .content {
+      font-size: 32px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Thicker Font Family - Multi-Weight and File Test</h1>
+  
+  <div class="row">
+    <span class="label">Variable Font - Weight 300 (Light):</span>
+    <span class="content" style="font-family: 'ThickerVar', serif; font-weight: 300;">Great! Let me tell you</span>
+  </div>
+  
+  <div class="row">
+    <span class="label">Variable Font - Weight 400 (Regular):</span>
+    <span class="content" style="font-family: 'ThickerVar', serif; font-weight: 400;">Great! Let me tell you</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Variable Font - Weight 700 (Bold):</span>
+    <span class="content" style="font-family: 'ThickerVar', serif; font-weight: 700;">Great! Let me tell you</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Static Light File (Weight 300):</span>
+    <span class="content" style="font-family: 'ThickerStaticLight', serif; font-weight: 300;">Great! Let me tell you</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Static Regular File (Weight 400):</span>
+    <span class="content" style="font-family: 'ThickerStaticRegular', serif; font-weight: 400;">Great! Let me tell you</span>
+  </div>
+
+  <div class="row">
+    <span class="label">Static Bold File (Weight 700):</span>
+    <span class="content" style="font-family: 'ThickerStaticBold', serif; font-weight: 700;">Great! Let me tell you</span>
+  </div>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import "./globals.css";
+import CustomCursor from "./components/CustomCursor";
 
 export const metadata = {
   title: "SPECTRAL - кинематографичный сайт для заявок",
@@ -6,7 +7,7 @@ export const metadata = {
     "SPECTRAL проектирует сайты, где первый экран сразу объясняет ценность, собирает контакт и запускает понятный сценарий продаж.",
 };
 
-const themeScript = `try{var t=localStorage.getItem('spectral-theme')||'dark';document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#07090d':'#f5efe6')}catch(e){}`;
+const themeScript = `try{var t=localStorage.getItem('spectral-theme')||'dark';document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#07090d':'#f8fafc')}catch(e){}`;
 
 export default function RootLayout({ children }) {
   return (
@@ -16,12 +17,15 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        {children}
+        <CustomCursor />
+      </body>
     </html>
   );
 }
