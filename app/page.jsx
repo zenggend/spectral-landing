@@ -619,7 +619,11 @@ export default function Home() {
 
   return (
     <main
-      className={`experience-shell${introPhase === "welcome" || introPhase === "rainbow" ? " intro-rainbow" : ""}${introPhase === "rainbow" ? " intro-rainbow-glow" : ""}`}
+      className={`experience-shell${
+        introPhase === "hello" || introPhase === "welcome" || introPhase === "rainbow"
+          ? " intro-rainbow intro-rainbow-glow"
+          : ""
+      }`}
       onPointerDown={(event) => addBurst(event.clientX, event.clientY)}
       style={{
         "--accent-a": accentA,
@@ -702,8 +706,21 @@ export default function Home() {
         <i />
       </div>
 
-
-      <section className="scene-layer">
+      <section className={`scene-layer ${
+        scene === 0 && (introPhase === "hello" || introPhase === "welcome" || introPhase === "rainbow")
+          ? "intro-rainbow-active"
+          : ""
+      }`}>
+        {scene === 0 && (
+          <>
+            <div className={`intro-rainbow-bg ${
+              (introPhase === "hello" || introPhase === "welcome" || introPhase === "rainbow") ? "active" : "fade-out"
+            }`} />
+            <div className={`intro-rainbow-mask ${
+              (introPhase === "hello" || introPhase === "welcome" || introPhase === "rainbow") ? "collapsed" : "expanded"
+            }`} />
+          </>
+        )}
         <article className={`scene intro-scene ${scene === 0 ? "active" : ""}`}>
           {/* Phase 1 & 2: Hello + Welcome (fades out together) */}
           <div className={`intro-dialog intro-greeting${introPhase === "fadeOut" || introPhase === "nameInput" ? " intro-hidden" : ""}`}>

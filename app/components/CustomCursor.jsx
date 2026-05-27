@@ -4,16 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 export default function CustomCursor() {
   const dotRef = useRef(null);
-  const ringRef = useRef(null);
   const mouseRef = useRef({ x: -100, y: -100 });
-  const ringPosRef = useRef({ x: -100, y: -100 });
   const rafRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const dot = dotRef.current;
-    const ring = ringRef.current;
-    if (!dot || !ring) return;
+    if (!dot) return;
 
     function onMouseMove(e) {
       mouseRef.current.x = e.clientX;
@@ -30,27 +27,19 @@ export default function CustomCursor() {
     }
 
     function onPointerDown() {
-      dot.style.transform = "translate(-50%,-50%) scale(0.7)";
-      ring.style.transform = "translate(-50%,-50%) scale(0.6)";
+      dot.style.transform = "scale(0.82)";
     }
 
     function onPointerUp() {
-      dot.style.transform = "translate(-50%,-50%) scale(1)";
-      ring.style.transform = "translate(-50%,-50%) scale(1)";
+      dot.style.transform = "scale(1)";
     }
 
     function animate() {
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-      const rp = ringPosRef.current;
-
-      rp.x += (mx - rp.x) * 0.15;
-      rp.y += (my - rp.y) * 0.15;
 
       dot.style.left = `${mx}px`;
       dot.style.top = `${my}px`;
-      ring.style.left = `${rp.x}px`;
-      ring.style.top = `${rp.y}px`;
 
       rafRef.current = requestAnimationFrame(animate);
     }
@@ -79,8 +68,27 @@ export default function CustomCursor() {
       style={{ opacity: visible ? 1 : 0 }}
       aria-hidden="true"
     >
-      <span ref={dotRef} className="cursor-dot" />
-      <span ref={ringRef} className="cursor-ring" />
+      <div ref={dotRef} className="cursor-pointer-svg">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" className="neon-svg-pointer">
+          <defs>
+            <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <path
+            d="M0 0 L0 16 L4.5 12 L9 19 L11 17.5 L6.5 10.5 L11 10.5 Z"
+            fill="color-mix(in srgb, var(--accent-b) 16%, rgba(0, 0, 0, 0.45))"
+            stroke="var(--accent-b)"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+            filter="url(#neon-glow)"
+          />
+        </svg>
+      </div>
     </div>
   );
 }
