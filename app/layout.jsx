@@ -1,10 +1,16 @@
 import "./globals.css";
-import CustomCursor from "./components/CustomCursor";
 
 export const metadata = {
   title: "SPECTRAL - кинематографичный сайт для заявок",
   description:
     "SPECTRAL проектирует сайты, где первый экран сразу объясняет ценность, собирает контакт и запускает понятный сценарий продаж.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/logo_spectral.png", type: "image/png" },
+    ],
+    apple: "/logo_spectral.png",
+  },
 };
 
 const themeScript = `try{var t=localStorage.getItem('spectral-theme')||'dark';document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='dark'?'#07090d':'#f8fafc')}catch(e){}`;
@@ -24,7 +30,6 @@ export default function RootLayout({ children }) {
       </head>
       <body suppressHydrationWarning>
         {children}
-        <CustomCursor />
       </body>
     </html>
   );

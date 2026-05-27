@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DoorOpen, GalleryHorizontalEnd, Moon, Send, Sun, UsersRound, Workflow } from "lucide-react";
+import { DoorOpen, GalleryHorizontalEnd, Moon, Send, Sun, UsersRound, Workflow, Layers } from "lucide-react";
 import bapcareShot from "./screenshots/bapcare.png";
 import championFitnessShot from "./screenshots/champion-fitness.png";
 import championSchoolShot from "./screenshots/championschool.png";
 import koroidShot from "./screenshots/koroid.png";
 
 const telegramUrl = "https://t.me/zenggen";
-const navIcons = [DoorOpen, UsersRound, Workflow, GalleryHorizontalEnd, Send];
+const navIcons = [DoorOpen, UsersRound, Layers, Workflow, GalleryHorizontalEnd, Send];
 const caseScreenshots = {
   "bapcare.com": bapcareShot.src,
   "champion-fitness.kz": championFitnessShot.src,
@@ -29,8 +29,9 @@ const copy = {
     next: "Дальше",
     back: "Назад",
     skip: "Пропустить к форме",
-    nav: ["Вход", "Команда", "Процесс", "Кейсы", "Форма"],
+    nav: ["Вход", "Команда", "Услуги", "Процесс", "Кейсы", "Форма"],
     bridgeAbout: "Отлично! Давайте расскажу о нас поподробнее",
+    bridgeServices: "А теперь расскажем о наших услугах",
     bridgeWork: "А теперь немного о том как мы работаем",
     bridgeCases: "Убедитесь на уже готовых примерах:",
     bridgeFinal: "Последний переход. Если сигнал совпал - оставьте короткий контакт.",
@@ -45,6 +46,43 @@ const copy = {
       ["Прозрачный процесс", "Вы видите этапы, решения и следующий шаг без тумана и бесконечных правок."],
       ["Дизайн с характером", "Не собираем шаблон. Подбираем визуальный язык под задачу бизнеса."],
     ],
+    servicesKicker: "наши услуги",
+    servicesTitle: "Идеальное сотрудничество.",
+    servicesLead: "Мы проектируем и разрабатываем высоконагруженные коммерческие решения, мобильные приложения, игры и внедряем ИИ под ваши задачи.",
+    servicesHint: "Нажмите на плитку, чтобы узнать подробности и стек технологий.",
+    servicesSelectService: "Выберите услугу на витрине слева, чтобы изучить стек и состав работ.",
+    services: {
+      list: [
+        {
+          id: "web",
+          name: "Web Development",
+          desc: "Мы проектируем и разрабатываем высоконагруженные коммерческие сайты, интернет-магазины, социальные сети и уникальные имиджевые промо-страницы. Наш фокус — скорость работы, безупречный UX/UI и высокая конверсия.",
+          items: ["Коммерческие сайты", "Интернет-магазины", "Веб-сервисы и порталы", "Промо-лендинги"],
+          tech: "React / Next.js / Node.js / Three.js"
+        },
+        {
+          id: "mobile",
+          name: "Mobile App Development",
+          desc: "Создаем нативные и кроссплатформенные мобильные приложения для iOS и Android с плавным интерфейсом, оффлайн-режимом и интеграцией с любыми внешними сервисами и API.",
+          items: ["iOS & Android", "Кроссплатформенные решения", "Высокая производительность", "Интеграция API"],
+          tech: "Flutter / React Native / Swift / Kotlin"
+        },
+        {
+          id: "game",
+          name: "Game Development",
+          desc: "Разрабатываем интерактивные 2D и 3D игры, геймифицированные промо-кампании, веб-игры и интерактивные симуляторы. Внедряем передовую графику и физику прямо в браузере.",
+          items: ["3D и 2D игры", "Геймификация для бизнеса", "WebGL и PlayCanvas", "Интерактивные механики"],
+          tech: "WebGL / Three.js / Unity / Unreal"
+        },
+        {
+          id: "ai",
+          name: "AI Development",
+          desc: "Интегрируем искусственный интеллект в бизнес-процессы: нейросети, LLM (ChatGPT/Gemini/Claude), компьютерное зрение, автоматический анализ данных и умные агенты для автоматизации рутины.",
+          items: ["Интеграция LLM", "Компьютерное зрение", "Умные AI-агенты", "Анализ данных и ML"],
+          tech: "Python / PyTorch / OpenAI API / LangChain"
+        }
+      ]
+    },
     workKicker: "как мы работаем",
     workTitle: "От идеи до запуска без хаоса.",
     workLead:
@@ -131,8 +169,9 @@ const copy = {
     next: "Next",
     back: "Back",
     skip: "Skip to form",
-    nav: ["Entry", "Team", "Process", "Cases", "Form"],
+    nav: ["Entry", "Team", "Services", "Process", "Cases", "Form"],
     bridgeAbout: "Great! Let me tell you more about us",
+    bridgeServices: "Now, let us show you our services",
     bridgeWork: "Now a little about how we work",
     bridgeCases: "See it in finished examples:",
     bridgeFinal: "Final transition. If the signal matched - leave a quick contact.",
@@ -147,6 +186,43 @@ const copy = {
       ["Transparent process", "You see stages, decisions and the next step without fog or endless edits."],
       ["Visual character", "No template assembly. We shape the visual language around the business goal."],
     ],
+    servicesKicker: "our services",
+    servicesTitle: "Ideal cooperation.",
+    servicesLead: "We design and develop high-performance commercial web solutions, mobile applications, games, and integrate AI systems.",
+    servicesHint: "Click on any tile to see full work details and tech stack.",
+    servicesSelectService: "Select a service from the showcase on the left to view tech stack and deliverables.",
+    services: {
+      list: [
+        {
+          id: "web",
+          name: "Web Development",
+          desc: "We design and build high-performance commercial websites, e-commerce stores, social media platforms, and unique promotional sites. We focus on loading speeds, flawless UX/UI, and high sales conversion.",
+          items: ["Commercial Websites", "Online Stores", "Web Portals & Apps", "Promo Landing Pages"],
+          tech: "React / Next.js / Node.js / Three.js"
+        },
+        {
+          id: "mobile",
+          name: "Mobile App Development",
+          desc: "We build native and cross-platform mobile apps for iOS and Android featuring smooth UI performance, fully offline modes, and seamless API integrations.",
+          items: ["iOS & Android Apps", "Cross-Platform Tech", "High Performance UI", "API & Cloud Integration"],
+          tech: "Flutter / React Native / Swift / Kotlin"
+        },
+        {
+          id: "game",
+          name: "Game Development",
+          desc: "We develop interactive 2D and 3D games, gamified promotional campaigns, web-based games, and interactive training simulators. We integrate advanced mechanics and physics directly in browsers.",
+          items: ["3D & 2D Games", "Business Gamification", "WebGL & PlayCanvas", "Interactive Mechanics"],
+          tech: "WebGL / Three.js / Unity / Unreal"
+        },
+        {
+          id: "ai",
+          name: "AI Development",
+          desc: "We integrate artificial intelligence into business workflows: custom LLMs (ChatGPT/Gemini/Claude), computer vision models, auto-data processing, and intelligent autonomous agents.",
+          items: ["LLM Integrations", "Computer Vision", "Autonomous AI Agents", "Data Analytics & ML"],
+          tech: "Python / PyTorch / OpenAI API / LangChain"
+        }
+      ]
+    },
     workKicker: "how we work",
     workTitle: "From idea to launch without chaos.",
     workLead:
@@ -224,18 +300,23 @@ const copy = {
 };
 
 const sceneAccent = [
-  ["#8fc7ef", "#7de4d8", "#ffad9d"],
-  ["#7de4d8", "#ffad9d", "#f3cb73"],
-  ["#7de4d8", "#f3cb73", "#8fc7ef"],
-  ["#f3cb73", "#8fc7ef", "#ffad9d"],
-  ["#ffad9d", "#8fc7ef", "#7de4d8"],
-  ["#8fc7ef", "#f3cb73", "#ffad9d"],
-  ["#f3cb73", "#7de4d8", "#8fc7ef"],
-  ["#ffad9d", "#7de4d8", "#f3cb73"],
-  ["#8fc7ef", "#ffad9d", "#7de4d8"],
+  ["#8fc7ef", "#7de4d8", "#ffad9d"], // scene 0
+  ["#7de4d8", "#ffad9d", "#f3cb73"], // scene 1
+  ["#7de4d8", "#f3cb73", "#8fc7ef"], // scene 2
+  ["#f3cb73", "#8fc7ef", "#ffad9d"], // scene 3
+  ["#ffad9d", "#8fc7ef", "#7de4d8"], // scene 4
+  ["#8fc7ef", "#f3cb73", "#ffad9d"], // scene 5
+  ["#f3cb73", "#7de4d8", "#8fc7ef"], // scene 6
+  ["#ffad9d", "#7de4d8", "#f3cb73"], // scene 7
+  ["#8fc7ef", "#ffad9d", "#7de4d8"], // scene 8
+  ["#7de4d8", "#ffad9d", "#f3cb73"], // scene 9
+  ["#f3cb73", "#8fc7ef", "#ffad9d"], // scene 10
 ];
 
 const emptyForm = { contact: "", idea: "" };
+const wipeStripCount = 6;
+const wipeInTotalMs = 456;
+const wipeOutTotalMs = 400;
 
 function buildBrief({ contact, idea }, name, lang) {
   const ru = lang === "ru";
@@ -363,6 +444,17 @@ export default function Home() {
   const [theme, setTheme] = useState("dark");
   const booting = false;
   const [scene, setScene] = useState(0);
+  const [prevScene, setPrevScene] = useState(0);
+  const [transitionKey, setTransitionKey] = useState(0);
+  const [wipePhase, setWipePhase] = useState("idle");
+
+  useEffect(() => {
+    if (scene !== prevScene) {
+      setPrevScene(scene);
+      setTransitionKey((prev) => prev + 1);
+    }
+  }, [scene, prevScene]);
+
   const [name, setName] = useState("");
   const [nameTouched, setNameTouched] = useState(false);
   const [form, setForm] = useState(emptyForm);
@@ -376,16 +468,20 @@ export default function Home() {
   const nameInputRef = useRef(null);
   const navRef = useRef(null);
   const navButtonRefs = useRef([]);
+  const wipeTimersRef = useRef([]);
+  const wipeFramesRef = useRef([]);
   const [navMarker, setNavMarker] = useState({ left: 6, width: 0 });
   const c = copy[lang];
-  const lastScene = 8;
-  const visibleNavScenes = [0, 2, 4, 6, lastScene];
-  const activeNavIndex = Math.min(navIcons.length - 1, Math.max(0, Math.round(scene / 2)));
+  const [focusedService, setFocusedService] = useState(null);
+  const lastScene = 10;
+  const visibleNavScenes = [0, 2, 4, 6, 8, lastScene];
+  const activeNavIndex = Math.min(navIcons.length - 1, Math.max(0, Math.floor(scene / 2)));
   const bridgeSceneText = {
     1: c.bridgeAbout,
-    3: c.bridgeWork,
-    5: c.bridgeCases,
-    7: c.bridgeFinal,
+    3: c.bridgeServices,
+    5: c.bridgeWork,
+    7: c.bridgeCases,
+    9: c.bridgeFinal,
   }[scene];
   const displayName = name.trim() || (lang === "ru" ? "друг" : "friend");
   const [accentA, accentB, accentC] = sceneAccent[scene];
@@ -437,6 +533,10 @@ export default function Home() {
         ? ["заинтересовать"]
         : ["manage", "interest"];
   const brief = useMemo(() => buildBrief(form, displayName, lang), [displayName, form, lang]);
+  const currentServiceData = useMemo(
+    () => c.services.list.find((service) => service.id === focusedService) || null,
+    [c.services.list, focusedService],
+  );
 
   useEffect(() => {
     const savedLang = localStorage.getItem("spectral-lang");
@@ -466,7 +566,8 @@ export default function Home() {
   }, [activeNavIndex, lang]);
 
   useEffect(() => {
-    if (scene === 6) setSelectedCase(null);
+    if (scene === 8) setSelectedCase(null);
+    if (scene === 4) setFocusedService(null);
   }, [scene]);
 
   useEffect(() => {
@@ -484,6 +585,15 @@ export default function Home() {
     }, Math.min(5200, 1450 + bridgeSceneText.length * 32));
     return () => window.clearTimeout(timer);
   }, [booting, bridgeSceneText, scene]);
+
+  useEffect(() => {
+    return () => {
+      wipeTimersRef.current.forEach(window.clearTimeout);
+      wipeTimersRef.current = [];
+      wipeFramesRef.current.forEach(window.cancelAnimationFrame);
+      wipeFramesRef.current = [];
+    };
+  }, []);
 
   function playBootSound() {
     try {
@@ -513,41 +623,66 @@ export default function Home() {
     setBursts((items) => [...items.slice(-8), { id: crypto.randomUUID(), x, y, big }]);
   }
 
+  function runStripWipe(onCovered, burstX = window.innerWidth / 2, burstY = window.innerHeight / 2) {
+    if (lockRef.current) return;
+    lockRef.current = true;
+    setWipePhase("in");
+    addBurst(burstX, burstY, true);
+
+    const wipeInTimer = window.setTimeout(() => {
+      onCovered();
+
+      const firstFrame = window.requestAnimationFrame(() => {
+        const secondFrame = window.requestAnimationFrame(() => {
+          setWipePhase("out");
+
+          const wipeOutTimer = window.setTimeout(() => {
+            setWipePhase("idle");
+            lockRef.current = false;
+          }, wipeOutTotalMs);
+
+          wipeTimersRef.current.push(wipeOutTimer);
+        });
+
+        wipeFramesRef.current.push(secondFrame);
+      });
+
+      wipeFramesRef.current.push(firstFrame);
+    }, wipeInTotalMs);
+
+    wipeTimersRef.current.push(wipeInTimer);
+  }
+
   function goTo(next) {
     const target = Math.max(0, Math.min(lastScene, next));
-    if (target === sceneRef.current) return;
+    if (target === sceneRef.current || lockRef.current) return;
     if (sceneRef.current === 0 && target > 0 && !name.trim()) {
       setNameTouched(true);
       nameInputRef.current?.focus();
       addBurst(window.innerWidth / 2, window.innerHeight / 2, true);
       return;
     }
-    sceneRef.current = target;
-    setScene(target);
-    addBurst(window.innerWidth / 2, window.innerHeight / 2, true);
+    runStripWipe(() => {
+      sceneRef.current = target;
+      setScene(target);
+    });
+  }
+
+  function toggleLanguage() {
+    if (lockRef.current) return;
+    runStripWipe(
+      () => setLang((current) => (current === "ru" ? "en" : "ru")),
+      window.innerWidth * 0.82,
+      window.innerHeight * 0.12,
+    );
   }
 
   useEffect(() => {
-    function unlock() {
-      window.setTimeout(() => {
-        lockRef.current = false;
-      }, 920);
-    }
-
-    function onWheel(event) {
-      const tag = event.target?.tagName?.toLowerCase();
-      if (booting || tag === "input" || tag === "textarea") return;
-      if (Math.abs(event.deltaY) < 24) return;
-      event.preventDefault();
-      if (lockRef.current) return;
-      lockRef.current = true;
-      goTo(sceneRef.current + (event.deltaY > 0 ? 1 : -1));
-      unlock();
-    }
-
     function onKeyDown(event) {
       if (booting) return;
-      if (sceneRef.current === 6 && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
+
+      // Case Gallery key navigation (Scene 8)
+      if (sceneRef.current === 8 && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
         event.preventDefault();
         setSelectedCase((current) => {
           if (current === null) return 0;
@@ -557,33 +692,28 @@ export default function Home() {
         addBurst(window.innerWidth * 0.58, window.innerHeight * 0.5, event.key === "ArrowRight");
         return;
       }
-      if (event.key === "ArrowDown" || event.key === "PageDown") goTo(sceneRef.current + 1);
-      if (event.key === "ArrowUp" || event.key === "PageUp") goTo(sceneRef.current - 1);
-      if (event.key === "End") goTo(lastScene);
-      if (event.key === "Home") goTo(0);
+
+      // Services key navigation (Scene 4)
+      if (sceneRef.current === 4 && (event.key === "ArrowRight" || event.key === "ArrowLeft")) {
+        event.preventDefault();
+        setFocusedService((current) => {
+          if (current === null) return "web";
+          const ids = ["web", "mobile", "game", "ai"];
+          const idx = ids.indexOf(current);
+          const direction = event.key === "ArrowRight" ? 1 : -1;
+          const nextIdx = Math.max(0, Math.min(ids.length - 1, idx + direction));
+          return ids[nextIdx];
+        });
+        addBurst(window.innerWidth * 0.58, window.innerHeight * 0.5, event.key === "ArrowRight");
+        return;
+      }
     }
 
-    function onTouchStart(event) {
-      touchRef.current = event.touches[0]?.clientY || 0;
-    }
-
-    function onTouchEnd(event) {
-      const end = event.changedTouches[0]?.clientY || 0;
-      const delta = touchRef.current - end;
-      if (Math.abs(delta) > 42) goTo(sceneRef.current + (delta > 0 ? 1 : -1));
-    }
-
-    window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
-      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend", onTouchEnd);
     };
-  }, [booting, lastScene]);
+  }, [booting]);
 
   function startExperience() {
     if (!name.trim()) {
@@ -642,12 +772,7 @@ export default function Home() {
       <header className="topline">
         <button className="brand-pill" onClick={() => goTo(0)} type="button">
           <span className="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 44 44" fill="none">
-              <rect x="12" y="10" width="12" height="24" rx="1.5" transform="rotate(13 18 22)" stroke="currentColor" strokeWidth="1.7" />
-              <path d="M27 15.5 40 12.5" stroke="var(--accent-a)" strokeWidth="2.8" strokeLinecap="round" />
-              <path d="M28 22 40 22" stroke="var(--accent-b)" strokeWidth="2.8" strokeLinecap="round" />
-              <path d="M27 28.5 40 31.5" stroke="var(--accent-c)" strokeWidth="2.8" strokeLinecap="round" />
-            </svg>
+            <img src="/logo_spectral.png" alt="" draggable="false" />
           </span>
           <b>SPECTRAL</b>
         </button>
@@ -696,8 +821,16 @@ export default function Home() {
               {theme === "dark" ? "Night" : "Day"}
             </span>
           </button>
-          <button type="button" onClick={() => setLang(lang === "ru" ? "en" : "ru")} aria-label={c.lang}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            aria-label={c.lang}
+            className="language-toggle"
+          >
+            <span className="language-toggle-content">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span>{c.lang}</span>
+            </span>
           </button>
         </div>
       </header>
@@ -711,6 +844,7 @@ export default function Home() {
           ? "intro-rainbow-active"
           : ""
       }`}>
+
         {scene === 0 && (
           <>
             <div className={`intro-rainbow-bg ${
@@ -783,11 +917,75 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {/* Combined floating Rocket graphic from Koroid */}
+          <div className="about-rocket-container max-lg:hidden">
+            <img src="/images/ToTheMoon!.svg" alt="Rocket" className="about-rocket-float" />
+          </div>
+          <div className="about-rocket-container lg:hidden">
+            <img src="/images/ToTheMoon!.svg" alt="Rocket" className="about-rocket-float-mobile" />
+          </div>
         </article>
 
-        <BridgeScene active={scene === 3} text={c.bridgeWork} />
+        <BridgeScene active={scene === 3} text={c.bridgeServices} />
 
-        <article className={`scene work-scene ${scene === 4 ? "active" : ""}`}>
+        {/* Brand New Services Scene from Koroid */}
+        <article className={`scene services-scene ${scene === 4 ? "active" : ""}`}>
+          <div className="copy-column services-copy">
+            <small className="kicker">{c.servicesKicker}</small>
+            <h2>{c.servicesTitle}</h2>
+            <p>{c.servicesLead}</p>
+            <p className="services-hint">{c.servicesHint}</p>
+          </div>
+
+          <div className="services-showcase">
+            <div className="services-union-grid">
+              {c.services.list.map((srv, idx) => (
+                <button
+                  key={srv.id}
+                  className={`service-tile tile-${srv.id} ${focusedService === srv.id ? "selected" : ""}`}
+                  onClick={() => setFocusedService(srv.id)}
+                  type="button"
+                >
+                  <span className="service-tile-num">{`0${idx + 1}`}</span>
+                  <h3>{srv.name}</h3>
+                  <span className="service-tile-more">More →</span>
+                </button>
+              ))}
+            </div>
+
+            <aside className={`service-detail-panel ${currentServiceData ? "show" : "empty"}`}>
+              {currentServiceData ? (
+                <>
+                  <small>service details</small>
+                  <h3>{currentServiceData.name}</h3>
+                  <p>{currentServiceData.desc}</p>
+                  <div className="service-items">
+                    {currentServiceData.items.map((item) => (
+                      <span key={item} className="service-item-tag">{item}</span>
+                    ))}
+                  </div>
+                  <div className="service-tech">
+                    <strong>Tech Stack:</strong> <span>{currentServiceData.tech}</span>
+                  </div>
+                  <button className="service-close-btn" onClick={() => setFocusedService(null)}>
+                    ✕ Close
+                  </button>
+                </>
+              ) : (
+                <>
+                  <small>details</small>
+                  <h3>→</h3>
+                  <p>{c.servicesSelectService}</p>
+                </>
+              )}
+            </aside>
+          </div>
+        </article>
+
+        <BridgeScene active={scene === 5} text={c.bridgeWork} />
+
+        <article className={`scene work-scene ${scene === 6 ? "active" : ""}`}>
           <div className="copy-column wide">
             <small className="kicker">{c.workKicker}</small>
             <h2>{c.workTitle}</h2>
@@ -804,9 +1002,9 @@ export default function Home() {
           </div>
         </article>
 
-        <BridgeScene active={scene === 5} text={c.bridgeCases} />
+        <BridgeScene active={scene === 7} text={c.bridgeCases} />
 
-        <article className={`scene cases-scene ${scene === 6 ? "active" : ""}`}>
+        <article className={`scene cases-scene ${scene === 8 ? "active" : ""}`}>
           <div className="copy-column case-copy">
             <small className="kicker">{c.casesKicker}</small>
             <h2>{c.casesTitle}</h2>
@@ -819,7 +1017,7 @@ export default function Home() {
           <CaseGallery c={c} selectedCase={selectedCase} setSelectedCase={setSelectedCase} />
         </article>
 
-        <BridgeScene active={scene === 7} text={c.bridgeFinal} />
+        <BridgeScene active={scene === 9} text={c.bridgeFinal} />
 
         <article className={`scene contact-scene ${scene === lastScene ? "active" : ""}`}>
           <div className="cta-type">
@@ -871,21 +1069,15 @@ export default function Home() {
         </article>
       </section>
 
-      <footer className="bottom-controls">
-        <button disabled={scene === 0} onClick={() => goTo(scene - 1)} type="button" aria-label={c.back}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        </button>
-        <button onClick={() => goTo(lastScene)} type="button" aria-label={c.skip}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-        </button>
-        <button disabled={scene === lastScene} onClick={() => goTo(scene + 1)} type="button" aria-label={c.next}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-      </footer>
-
       <div className="bursts" aria-hidden="true">
         {bursts.map((item) => (
           <span className={item.big ? "burst big" : "burst"} key={item.id} style={{ left: item.x, top: item.y }} />
+        ))}
+      </div>
+
+      <div id="wipe" className={`scene-wipe ${wipePhase}`} aria-hidden="true">
+        {Array.from({ length: wipeStripCount }, (_, index) => (
+          <div className="ws" key={index} style={{ "--strip-index": index }} />
         ))}
       </div>
     </main>
